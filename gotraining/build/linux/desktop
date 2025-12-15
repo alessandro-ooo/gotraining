@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=My Product
+Comment=A gotraining application
+# The Exec line includes %u to pass the URL to the application
+Exec=/usr/local/bin/gotraining.exe %u
+Terminal=false
+Type=Application
+Icon=gotraining.exe
+Categories=Utility;
+StartupWMClass=gotraining.exe
+
+ 
