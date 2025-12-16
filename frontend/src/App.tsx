@@ -1,35 +1,127 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "./App.css";
+import {
+  useFieldArray,
+  useForm,
+  type Control,
+  type UseFormRegister,
+} from "react-hook-form";
 
-function App() {
-  const [count, setCount] = useState(0)
+type FormData = {
+  days: {
+    name: string;
+    inputs: {
+      exercise: string;
+      repetitions: number;
+      sets: number;
+    }[];
+  }[];
+};
+
+type DayProps = {
+  dayIndex: number;
+  control: Control<FormData>;
+  register: UseFormRegister<FormData>;
+};
+
+function Day({ dayIndex, control, register }: DayProps) {
+  const {
+    fields: inputs,
+    append: appendInput,
+    remove: removeInput,
+  } = useFieldArray({
+    control,
+    name: `days.${dayIndex}.inputs`,
+  });
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+    <div className="flex flex-col gap-5">
+      <input {...register(`days.${dayIndex}.name`)} placeholder="Day Name" />
+
+      <div className="flex flex-col gap-2">
+        <button
+          type="button"
+          onClick={() =>
+            appendInput({
+              exercise: "",
+              repetitions: 0,
+              sets: 0,
+            })
+          }
+        >
+          Add exercise
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+
+        <div>
+          {inputs.map((input, inputIndex) => (
+            <div key={input.id} className="flex gap-2">
+              <input
+                {...register(`days.${dayIndex}.inputs.${inputIndex}.exercise`)}
+                placeholder="Exercise"
+              />
+              <input
+                {...register(
+                  `days.${dayIndex}.inputs.${inputIndex}.repetitions`
+                )}
+                type="number"
+                placeholder="Repetitions"
+              />
+              <input
+                {...register(`days.${dayIndex}.inputs.${inputIndex}.sets`)}
+                type="number"
+                placeholder="Sets"
+              />
+              <button type="button" onClick={() => removeInput(inputIndex)}>
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+function App() {
+  const { control, handleSubmit, register } = useForm<FormData>({
+    defaultValues: {
+      days: [{}],
+    },
+  });
+
+  const {
+    fields: dayFields,
+    append: appendDay,
+    // remove: removeDay,
+  } = useFieldArray({
+    control,
+    name: "days",
+  });
+
+  const onSubmit = (data: FormData) => {
+    console.log(data);
+  };
+  return (
+    <div>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <button
+          type="button"
+          onClick={() => appendDay({ name: "", inputs: [] })}
+        >
+          Add Day
+        </button>
+
+        {dayFields.map((day, dayIndex) => (
+          <Day
+            key={day.id}
+            dayIndex={dayIndex}
+            control={control}
+            register={register}
+          />
+        ))}
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  );
+}
+
+export default App;
