@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/incompatible-library */
 import "./App.css";
 import {
   useFieldArray,
@@ -5,6 +6,11 @@ import {
   type Control,
   type UseFormRegister,
 } from "react-hook-form";
+
+import {
+  SaveJSON,
+  ListJSONs,
+} from "../bindings/gotraining/services/json/jsonservice";
 
 type FormData = {
   days: {
@@ -82,7 +88,7 @@ function Day({ dayIndex, control, register }: DayProps) {
 }
 
 function App() {
-  const { control, handleSubmit, register } = useForm<FormData>({
+  const { control, handleSubmit, register, watch } = useForm<FormData>({
     defaultValues: {
       days: [{}],
     },
@@ -102,6 +108,25 @@ function App() {
   };
   return (
     <div>
+      <button
+        type="button"
+        onClick={async () => {
+          const r = await ListJSONs();
+          console.log(r);
+        }}
+      >
+        load em all
+      </button>
+      <button
+        type="button"
+        onClick={async () => {
+          const data = watch();
+          const r = await SaveJSON(JSON.stringify(data));
+          console.log(r);
+        }}
+      >
+        generate file
+      </button>
       <form onSubmit={handleSubmit(onSubmit)}>
         <button
           type="button"
