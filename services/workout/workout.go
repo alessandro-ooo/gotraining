@@ -1,16 +1,20 @@
-package json
+package workout
 
 import (
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
-	"time"
 )
 
-type JSONService struct {}
+type WorkoutService struct {}
 
-func (j *JSONService) SaveJSON(data string) (string, error) {
+type JSONItem struct {
+    Filename string `json:"filename"`
+    Content  string `json:"content"`
+}
+
+func (j *WorkoutService) SaveWorkout(data string, name string) (string, error) {
     homeDir, err := os.UserHomeDir()
     if err != nil {
         return "", err
@@ -19,7 +23,7 @@ func (j *JSONService) SaveJSON(data string) (string, error) {
     if err := os.MkdirAll(dir, 0755); err != nil {
         return "", err
     }
-    filename := filepath.Join(dir, time.Now().Format("2006-01-02_15-04-05")+".json")
+    filename := filepath.Join(dir, name + ".json");
     err = os.WriteFile(filename, []byte(data), 0644)
 
     if err != nil {
@@ -29,7 +33,7 @@ func (j *JSONService) SaveJSON(data string) (string, error) {
     return filename, nil
 }
 
-func (j *JSONService) ListJSONs() ([]string, error) {
+func (j *WorkoutService) ListWorkouts() ([]JSONItem, error) {
     homeDir, err := os.UserHomeDir()
     if err != nil {
         return nil, err
@@ -49,14 +53,14 @@ func (j *JSONService) ListJSONs() ([]string, error) {
     }
     sort.Strings(filenames)
 
-    var jsons []string
+    var jsons []JSONItem
     for _, filename := range filenames {
         filepath := filepath.Join(dir, filename)
         data, err := os.ReadFile(filepath)
         if err != nil {
             return nil, err
         }
-        jsons = append(jsons, string(data))
+        jsons = append(jsons, JSONItem{Filename: filename, Content: string(data)})
     }
     return jsons, nil
 }

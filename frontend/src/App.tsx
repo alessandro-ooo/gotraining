@@ -1,4 +1,6 @@
 /* eslint-disable react-hooks/incompatible-library */
+// This is a placeholder code to test
+// Change as soon as possible
 import "./App.css";
 import {
   useFieldArray,
@@ -8,11 +10,12 @@ import {
 } from "react-hook-form";
 
 import {
-  SaveJSON,
-  ListJSONs,
-} from "../bindings/gotraining/services/json/jsonservice";
+  SaveWorkout,
+  ListWorkouts,
+} from "../bindings/gotraining/services/workout/workoutservice";
 
 type FormData = {
+  name: string;
   days: {
     name: string;
     inputs: {
@@ -88,8 +91,9 @@ function Day({ dayIndex, control, register }: DayProps) {
 }
 
 function App() {
-  const { control, handleSubmit, register, watch } = useForm<FormData>({
+  const { control, handleSubmit, register, watch, reset } = useForm<FormData>({
     defaultValues: {
+      name: "",
       days: [{}],
     },
   });
@@ -111,8 +115,10 @@ function App() {
       <button
         type="button"
         onClick={async () => {
-          const r = await ListJSONs();
-          console.log(r);
+          const r = await ListWorkouts();
+          const loadedData = JSON.parse(r[1].content) as FormData;
+          reset(loadedData);
+          console.log(r[1].content);
         }}
       >
         load em all
@@ -121,12 +127,16 @@ function App() {
         type="button"
         onClick={async () => {
           const data = watch();
-          const r = await SaveJSON(JSON.stringify(data));
+          const r = await SaveWorkout(
+            JSON.stringify(data),
+            data.name || "untitled"
+          );
           console.log(r);
         }}
       >
         generate file
       </button>
+      <input {...register("name")} placeholder="Workout Name" />
       <form onSubmit={handleSubmit(onSubmit)}>
         <button
           type="button"

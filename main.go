@@ -8,7 +8,7 @@ import (
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 
-	"gotraining/services/json"
+	"gotraining/services/workout"
 )
 
 // Wails uses Go's `embed` package to embed the frontend files into the binary.
@@ -40,7 +40,7 @@ func main() {
 		Name:        "gotraining",
 		Description: "A demo of using raw HTML & CSS",
 		Services: []application.Service{
-			application.NewService(&json.JSONService{}),
+			application.NewService(&workout.WorkoutService{}),
 		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(assets),
