@@ -3,14 +3,20 @@ import Icon, { type IconName } from "../icon/icon";
 
 type ButtonProps = {
   text?: string;
-  variant: "default" | "secondary" | "tertiary";
+  variant: "default" | "secondary" | "tertiary" | "discard";
   icon?: IconName;
   iconColor?: string;
+  onClick?: () => void;
 };
 
-const GTButton = ({ variant, icon, text, iconColor }: ButtonProps) => {
+const GTButton = ({ variant, icon, text, iconColor, onClick }: ButtonProps) => {
   return (
-    <Button variant={variant} className="flex flex-row gap-2">
+    <Button
+      type="button"
+      variant={variant}
+      className="flex flex-row gap-2"
+      onClick={onClick}
+    >
       {icon && <Icon name={icon} color={iconColor} />}
       <p>{text}</p>
     </Button>

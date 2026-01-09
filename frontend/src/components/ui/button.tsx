@@ -15,6 +15,8 @@ const buttonVariants = cva(
           "bg-green-600 text-white hover:bg-green-500/90 border border-green-500",
         tertiary:
           "bg-yellow-300 text-zinc-900 hover:bg-yellow-500/50 border border-zinc-700",
+        discard:
+          "bg-red-600 text-white hover:bg-red-500/90 border border-red-500",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
