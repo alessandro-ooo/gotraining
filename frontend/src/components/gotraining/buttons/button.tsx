@@ -6,10 +6,18 @@ type ButtonProps = {
   variant: "default" | "secondary" | "tertiary" | "discard";
   icon?: IconName;
   iconColor?: string;
+  iconClassName?: string;
   onClick?: () => void;
 };
 
-const GTButton = ({ variant, icon, text, iconColor, onClick }: ButtonProps) => {
+const GTButton = ({
+  variant,
+  icon,
+  text,
+  iconColor,
+  iconClassName,
+  onClick,
+}: ButtonProps) => {
   return (
     <Button
       type="button"
@@ -17,7 +25,7 @@ const GTButton = ({ variant, icon, text, iconColor, onClick }: ButtonProps) => {
       className="flex flex-row gap-2"
       onClick={onClick}
     >
-      {icon && <Icon name={icon} color={iconColor} />}
+      {icon && <Icon name={icon} color={iconColor} className={iconClassName} />}
       <p>{text}</p>
     </Button>
   );
