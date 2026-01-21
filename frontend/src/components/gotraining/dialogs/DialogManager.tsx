@@ -29,7 +29,7 @@ const DialogManager = ({
     <Dialog>
       <form>
         <DialogTrigger asChild>{trigger}</DialogTrigger>
-        <DialogContent className="bg-zinc-900 text-white border-zinc-950">
+        <DialogContent className="bg-zinc-900 text-white border-zinc-950 min-w-14">
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
             {!!description && (
@@ -40,7 +40,7 @@ const DialogManager = ({
           <DialogFooter
             className={cn(
               options.length === 1 &&
-                "w-full justify-center sm:justify-center items-center"
+                "w-full justify-center sm:justify-center items-center",
             )}
           >
             {options.length === 1 && (
