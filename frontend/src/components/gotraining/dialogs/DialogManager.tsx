@@ -6,12 +6,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 type DialogManagerProps = {
-  trigger: React.ReactNode;
+  show: boolean;
   content: React.ReactNode;
   description?: string;
   title: string;
@@ -19,17 +18,19 @@ type DialogManagerProps = {
 };
 
 const DialogManager = ({
-  trigger,
+  show,
   content,
   title,
   description,
   options,
 }: DialogManagerProps) => {
   return (
-    <Dialog>
+    <Dialog open={show}>
       <form>
-        <DialogTrigger asChild>{trigger}</DialogTrigger>
-        <DialogContent className="bg-zinc-900 text-white border-zinc-950 min-w-14">
+        <DialogContent
+          showCloseButton={false}
+          className="bg-zinc-900 text-white border-zinc-950 min-w-14"
+        >
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
             {!!description && (

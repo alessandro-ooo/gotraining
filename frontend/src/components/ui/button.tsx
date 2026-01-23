@@ -17,6 +17,8 @@ const buttonVariants = cva(
           "bg-yellow-300 text-zinc-900 hover:bg-yellow-500/50 border border-zinc-700",
         discard:
           "bg-red-600 text-white hover:bg-red-500/90 border border-red-500",
+        table:
+          "bg-transparent text-gray-300 hover:bg-zinc-700/50 border border-transparent font-semibold",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
@@ -31,7 +33,7 @@ const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 function Button({
