@@ -1,5 +1,7 @@
 /* eslint-disable react-hooks/incompatible-library */
 
+// TODO: Little refactor
+// TODO: Dialog to confirm overwriting
 import {
   Document,
   Page,
@@ -20,10 +22,16 @@ import TextInput from "../components/gotraining/inputs/TextInput";
 
 import {
   SaveWorkout,
-  // ListWorkouts,
+  ListWorkouts,
+  LoadWorkout,
 } from "../../bindings/gotraining/services/workout/workoutservice";
 
 import { useLocation } from "wouter";
+import DialogContentLoads, {
+  type SavedItems,
+} from "@/components/gotraining/dialogs/contents/load";
+import { useState } from "react";
+import DialogContentGeneric from "@/components/gotraining/dialogs/contents/generic";
 
 type FormData = {
   name: string;
@@ -36,12 +44,6 @@ type FormData = {
     }[];
   }[];
 };
-
-// type DayProps = {
-//   dayIndex: number;
-//   control: Control<FormData>;
-//   register: UseFormRegister<FormData>;
-// };
 
 const styles = StyleSheet.create({
   page: {
@@ -207,12 +209,28 @@ function Day({ dayIndex, control, register, onRemove }: DayProps) {
 
 const Workout = () => {
   const [, navigate] = useLocation();
-  const { control, register, watch, getValues } = useForm<FormData>({
+  const [dialogID, setDialogID] = useState<string>("");
+  const [isFileSelected, setIsFileSelected] = useState<number>();
+  const [loadedFiles, setLoadedFiles] = useState<SavedItems[]>([]);
+
+  const {
+    control,
+    register,
+    // watch,
+    trigger,
+    getValues,
+    reset,
+    setValue,
+    formState: { isDirty, errors },
+  } = useForm<FormData>({
+    mode: "onChange",
     defaultValues: {
       name: "",
-      days: [{}],
+      days: [{ name: "", inputs: [] }],
     },
   });
+
+  console.log("IsDitry:", isDirty, getValues());
 
   const {
     fields: dayFields,
@@ -234,8 +252,16 @@ const Workout = () => {
     URL.revokeObjectURL(url);
   };
 
+  const loadFiles = async () => {
+    const workouts = await ListWorkouts();
+    return workouts.map((w) => ({
+      name: w.filename,
+      lastModified: "24 Gen 2024",
+    }));
+  };
+
   return (
-    <div className="bg-zinc-900 h-screen w-full p-8">
+    <form className="bg-zinc-900 h-screen w-full p-8">
       <div className="flex flex-col gap-4">
         <div className="flex flex-row justify-between rounded-lg">
           <div className="flex flex-row gap-2">
@@ -262,11 +288,19 @@ const Workout = () => {
             <GTButton
               variant="tertiary"
               text="Salva scheda"
+              type="button"
               onClick={async () => {
-                const data = watch();
+                const formData = getValues();
+
+                if (!formData.name.length) {
+                  console.log("Triggering name");
+                  trigger("name", { shouldFocus: true });
+                  return;
+                }
+
                 const r = await SaveWorkout(
-                  JSON.stringify(data),
-                  data.name || "untitled"
+                  JSON.stringify(formData),
+                  formData.name,
                 );
                 console.log(r);
               }}
@@ -280,9 +314,32 @@ const Workout = () => {
               icon="settings"
               onClick={() => navigate("/settings")}
             />
-            <GTButton variant="default" text="Carica" icon="load" />
+            <GTButton
+              variant="default"
+              text="Carica"
+              icon="load"
+              onClick={async () => {
+                if (isDirty) {
+                  setDialogID("generic");
+                  return;
+                }
+
+                const items = await loadFiles();
+                setLoadedFiles(items);
+                setDialogID("load");
+              }}
+            />
           </div>
         </div>
+
+        <TextInput
+          label="Nome della scheda"
+          hasError={errors.name?.message}
+          placeholder="Chest day, full body, ecc..."
+          {...register("name", {
+            required: "Nome della scheda è obbligatorio",
+          })}
+        />
 
         {dayFields.map((day, dayIndex) => (
           <Day
@@ -294,7 +351,43 @@ const Workout = () => {
           />
         ))}
       </div>
-    </div>
+
+      <DialogContentLoads
+        show={dialogID === "load"}
+        onCancelClick={() => setDialogID("")}
+        onLoadClick={async () => {
+          const loadedWorkout = await LoadWorkout(
+            loadedFiles[isFileSelected!].name,
+          );
+
+          reset(JSON.parse(loadedWorkout));
+          setValue("name", loadedFiles[isFileSelected!].name, {
+            shouldDirty: true,
+          });
+        }}
+        onItemClick={setIsFileSelected}
+        selectedItemIndex={isFileSelected}
+        items={loadedFiles}
+      />
+
+      <DialogContentGeneric
+        show={dialogID === "generic"}
+        title="Generic Dialog"
+        description="Attention"
+        content={
+          <div>
+            There are some changes that have not been saved Are you sure you
+            want to load?
+          </div>
+        }
+        onConfirm={async () => {
+          const items = await loadFiles();
+          setLoadedFiles(items);
+          setDialogID("load");
+        }}
+        onCancel={() => setDialogID("")}
+      />
+    </form>
   );
 };
 

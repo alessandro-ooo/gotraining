@@ -19,7 +19,7 @@ import {
 import GTButton from "../../buttons/button";
 import DialogManager from "../DialogManager";
 
-type SavedItems = {
+export type SavedItems = {
   name: string;
   lastModified: string;
 };

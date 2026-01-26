@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import Icon, { type IconName } from "../icon/icon";
 
 type ButtonProps = {
+  type?: "button" | "submit" | "reset";
   disabled?: boolean;
   text?: string;
   variant: "default" | "secondary" | "tertiary" | "discard" | "table";
@@ -12,6 +13,7 @@ type ButtonProps = {
 };
 
 const GTButton = ({
+  type = "button",
   disabled,
   variant,
   icon,
@@ -22,7 +24,7 @@ const GTButton = ({
 }: ButtonProps) => {
   return (
     <Button
-      type="button"
+      type={type}
       variant={variant}
       className="flex flex-row gap-2"
       onClick={onClick}

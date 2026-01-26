@@ -15,6 +15,10 @@ export function ListWorkouts(): $CancellablePromise<$models.JSONItem[]> {
     });
 }
 
+export function LoadWorkout(name: string): $CancellablePromise<string> {
+    return $Call.ByID(4197301079, name);
+}
+
 export function SaveWorkout(data: string, name: string): $CancellablePromise<string> {
     return $Call.ByID(3461505736, data, name);
 }

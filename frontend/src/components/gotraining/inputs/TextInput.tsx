@@ -7,16 +7,13 @@ type TextInputProps = {
   placeholder?: string;
   hasError?: string;
   disabled?: boolean;
-  required?: boolean;
+  // required?: boolean;
   value?: string;
   className?: string;
 };
 
 const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
-  (
-    { label, placeholder, hasError, disabled, required, className, ...props },
-    ref
-  ) => {
+  ({ label, placeholder, hasError, disabled, className, ...props }, ref) => {
     return (
       <div className="flex flex-col gap-1 text-left">
         {label && (
@@ -24,14 +21,14 @@ const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
         )}
 
         <Input
-          required={required}
+          // required={required}
           disabled={disabled}
           placeholder={placeholder}
           type="text"
           className={cn(
             "min-w-64 w-64 border-gray-300 bg-zinc-800 text-gray-300",
             className,
-            hasError && "border-red-500"
+            hasError && "border-red-500",
           )}
           {...props}
           ref={ref}
@@ -40,7 +37,7 @@ const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
         {hasError && <p className="text-xs text-red-500">{hasError}</p>}
       </div>
     );
-  }
+  },
 );
 
 export default TextInput;
