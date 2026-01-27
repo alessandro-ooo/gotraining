@@ -25,16 +25,12 @@ const DialogContentGeneric = ({
       title={title}
       description={description}
       options={[
-        <GTButton
-          variant="secondary"
-          text="Va bene"
-          onClick={() => onConfirm()}
-        />,
-        <GTButton
-          variant="tertiary"
-          text="Annulla"
-          onClick={() => onCancel()}
-        />,
+        <GTButton variant="secondary" onClick={() => onConfirm()}>
+          Conferma
+        </GTButton>,
+        <GTButton variant="tertiary" onClick={() => onCancel()}>
+          Annulla
+        </GTButton>,
       ]}
     />
   );

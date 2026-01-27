@@ -1,26 +1,20 @@
 import { Button } from "@/components/ui/button";
-import Icon, { type IconName } from "../icon/icon";
+import type React from "react";
 
 type ButtonProps = {
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
-  text?: string;
   variant: "default" | "secondary" | "tertiary" | "discard" | "table";
-  icon?: IconName;
-  iconColor?: string;
-  iconClassName?: string;
   onClick?: () => void;
+  children?: React.ReactNode;
 };
 
 const GTButton = ({
   type = "button",
   disabled,
   variant,
-  icon,
-  text,
-  iconColor,
-  iconClassName,
   onClick,
+  children,
 }: ButtonProps) => {
   return (
     <Button
@@ -30,8 +24,7 @@ const GTButton = ({
       onClick={onClick}
       disabled={disabled}
     >
-      {icon && <Icon name={icon} color={iconColor} className={iconClassName} />}
-      <p>{text}</p>
+      {children}
     </Button>
   );
 };

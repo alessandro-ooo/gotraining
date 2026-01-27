@@ -18,6 +18,7 @@ import {
 } from "@tanstack/react-table";
 import GTButton from "../../buttons/button";
 import DialogManager from "../DialogManager";
+import Icon from "../../icon/icon";
 
 export type SavedItems = {
   name: string;
@@ -41,8 +42,9 @@ const columns: ColumnDef<SavedItems>[] = [
         <GTButton
           variant="table"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          text="Name"
-        />
+        >
+          Name
+        </GTButton>
       );
     },
     cell: ({ row }) => (
@@ -58,8 +60,9 @@ const columns: ColumnDef<SavedItems>[] = [
         <GTButton
           variant="table"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          text="Last Modified"
-        />
+        >
+          Last Modified
+        </GTButton>
       );
     },
     cell: ({ row }) => (
@@ -171,17 +174,17 @@ const DialogContentLoads = ({
       options={[
         <GTButton
           variant="default"
-          text="Carica"
-          icon="load"
           disabled={selectedItemIndex === undefined}
           onClick={() => onLoadClick()}
-        />,
-        <GTButton
-          variant="default"
-          text="Test"
-          icon="load"
-          onClick={() => onCancelClick()}
-        />,
+        >
+          <div className="flex flex-row gap-2">
+            <p>Carica</p>
+            <Icon name="load" color="#FFFFFF" />
+          </div>
+        </GTButton>,
+        <GTButton variant="default" onClick={() => onCancelClick()}>
+          Annulla
+        </GTButton>,
       ]}
     />
   );
