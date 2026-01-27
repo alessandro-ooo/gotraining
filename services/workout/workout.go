@@ -60,7 +60,23 @@ func (j *WorkoutService) ListWorkouts() ([]JSONItem, error) {
         if err != nil {
             return nil, err
         }
-        jsons = append(jsons, JSONItem{Filename: filename, Content: string(data)})
+        name := strings.TrimSuffix(filename, ".json")
+        jsons = append(jsons, JSONItem{Filename: name, Content: string(data)})
     }
     return jsons, nil
+}
+
+func (j *WorkoutService) LoadWorkout(name string) (string, error) {
+    homeDir, err := os.UserHomeDir()
+    if err != nil {
+        return "", err
+    }
+    dir := filepath.Join(homeDir, "Documents", "plans")
+
+    filename := filepath.Join(dir, name+".json")
+    data, err := os.ReadFile(filename)
+    if err != nil {
+        return "", err
+    }
+    return string(data), nil
 }
