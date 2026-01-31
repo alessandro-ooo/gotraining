@@ -1,24 +1,30 @@
 import { Button } from "@/components/ui/button";
-import Icon, { type IconName } from "../icon/icon";
+import type React from "react";
 
 type ButtonProps = {
-  text?: string;
-  variant: "default" | "secondary" | "tertiary" | "discard";
-  icon?: IconName;
-  iconColor?: string;
+  type?: "button" | "submit" | "reset";
+  disabled?: boolean;
+  variant: "default" | "secondary" | "tertiary" | "discard" | "table";
   onClick?: () => void;
+  children?: React.ReactNode;
 };
 
-const GTButton = ({ variant, icon, text, iconColor, onClick }: ButtonProps) => {
+const GTButton = ({
+  type = "button",
+  disabled,
+  variant,
+  onClick,
+  children,
+}: ButtonProps) => {
   return (
     <Button
-      type="button"
+      type={type}
       variant={variant}
       className="flex flex-row gap-2"
       onClick={onClick}
+      disabled={disabled}
     >
-      {icon && <Icon name={icon} color={iconColor} />}
-      <p>{text}</p>
+      {children}
     </Button>
   );
 };
