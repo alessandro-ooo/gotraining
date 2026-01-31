@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/incompatible-library */
 
-// TODO: Little refactor
-// TODO: Dialog to confirm overwriting
+// TODO: Little refactor, popups
+
 import {
   Document,
   Page,
@@ -32,6 +32,14 @@ import DialogContentLoads, {
 } from "@/components/gotraining/dialogs/contents/load";
 import { useState } from "react";
 import DialogContentGeneric from "@/components/gotraining/dialogs/contents/generic";
+import Icon from "@/components/gotraining/icon/icon";
+
+const DIALOG_ID = {
+  NO_DIALOG: "",
+  LOAD: "load",
+  GENERIC: "generic",
+  OVERWRITE: "overwrite",
+};
 
 type FormData = {
   name: string;
@@ -160,10 +168,11 @@ function Day({ dayIndex, control, register, onRemove }: DayProps) {
   return (
     <div className="flex flex-col gap-5 bg-zinc-800 p-4 rounded-lg">
       <div className="flex flex-row gap-2 rounded-lg pb-2">
-        <GTButton variant="discard" text="Rimuovi giorno" onClick={onRemove} />
+        <GTButton variant="discard" onClick={onRemove}>
+          <p>Rimuovi giorno</p>
+        </GTButton>
         <GTButton
           variant="secondary"
-          text="Aggiungi esercizio"
           onClick={() =>
             appendInput({
               exercise: "",
@@ -171,7 +180,9 @@ function Day({ dayIndex, control, register, onRemove }: DayProps) {
               sets: 0,
             })
           }
-        />
+        >
+          <p>Aggiungi esercizio</p>
+        </GTButton>
       </div>
 
       <TextInput
@@ -195,11 +206,9 @@ function Day({ dayIndex, control, register, onRemove }: DayProps) {
               placeholder="Sets"
               {...register(`days.${dayIndex}.inputs.${inputIndex}.sets`)}
             />
-            <GTButton
-              variant="discard"
-              text="Remove"
-              onClick={() => removeInput(inputIndex)}
-            />
+            <GTButton variant="discard" onClick={() => removeInput(inputIndex)}>
+              <p>Rimuovi esercizio</p>
+            </GTButton>
           </div>
         ))}
       </div>
@@ -209,7 +218,10 @@ function Day({ dayIndex, control, register, onRemove }: DayProps) {
 
 const Workout = () => {
   const [, navigate] = useLocation();
-  const [dialogID, setDialogID] = useState<string>("");
+
+  type DIALOG_ID = (typeof DIALOG_ID)[keyof typeof DIALOG_ID];
+  const [dialogID, setDialogID] = useState<DIALOG_ID>("NO_DIALOG");
+
   const [isFileSelected, setIsFileSelected] = useState<number>();
   const [loadedFiles, setLoadedFiles] = useState<SavedItems[]>([]);
 
@@ -229,8 +241,6 @@ const Workout = () => {
       days: [{ name: "", inputs: [] }],
     },
   });
-
-  console.log("IsDitry:", isDirty, getValues());
 
   const {
     fields: dayFields,
@@ -267,57 +277,52 @@ const Workout = () => {
           <div className="flex flex-row gap-2">
             <GTButton
               variant="secondary"
-              text="Aggiungi giorno"
               onClick={() => appendDay({ name: "", inputs: [] })}
-            />
+            >
+              <p>Aggiungi giorno</p>
+            </GTButton>
 
             <GTButton
               variant="tertiary"
-              text="Genera PDF"
               onClick={async () => {
                 downloadPDF();
               }}
-              // const data = watch();
-              // const r = await SaveWorkout(
-              //   JSON.stringify(data),
-              //   data.name || "untitled"
-              // );
-              // console.log(r);
-              // }}
-            />
+            >
+              <p>Esporta PDF</p>
+            </GTButton>
             <GTButton
               variant="tertiary"
-              text="Salva scheda"
               type="button"
               onClick={async () => {
                 const formData = getValues();
 
                 if (!formData.name.length) {
-                  console.log("Triggering name");
                   trigger("name", { shouldFocus: true });
                   return;
                 }
 
-                const r = await SaveWorkout(
-                  JSON.stringify(formData),
-                  formData.name,
-                );
-                console.log(r);
+                const foundWorkout = await LoadWorkout(formData.name);
+                if (foundWorkout) {
+                  setDialogID(DIALOG_ID.OVERWRITE);
+                  return;
+                }
+
+                await SaveWorkout(JSON.stringify(formData), formData.name);
               }}
-            />
+            >
+              <p>Salva scheda</p>
+            </GTButton>
           </div>
 
           <div className="flex flex-row gap-2">
+            <GTButton variant="default" onClick={() => navigate("/settings")}>
+              <div className="flex flex-row gap-2">
+                <p>Impostazioni</p>
+                <Icon name="settings" color="#FFFFFF" />
+              </div>
+            </GTButton>
             <GTButton
               variant="default"
-              text="Impostazioni"
-              icon="settings"
-              onClick={() => navigate("/settings")}
-            />
-            <GTButton
-              variant="default"
-              text="Carica"
-              icon="load"
               onClick={async () => {
                 if (isDirty) {
                   setDialogID("generic");
@@ -328,7 +333,12 @@ const Workout = () => {
                 setLoadedFiles(items);
                 setDialogID("load");
               }}
-            />
+            >
+              <div className="flex flex-row gap-2">
+                <p>Carica scheda</p>
+                <Icon name="load" color="#FFFFFF" />
+              </div>
+            </GTButton>
           </div>
         </div>
 
@@ -371,19 +381,41 @@ const Workout = () => {
       />
 
       <DialogContentGeneric
-        show={dialogID === "generic"}
+        show={dialogID === "generic" || dialogID === "overwrite"}
         title="Generic Dialog"
         description="Attention"
         content={
           <div>
-            There are some changes that have not been saved Are you sure you
-            want to load?
+            {dialogID === "generic" && (
+              <p>
+                There are some changes that have not been saved. Are you sure
+                you want to load?
+              </p>
+            )}
+
+            {dialogID === "overwrite" && (
+              <p>
+                A workout with this name already exists. Do you want to
+                overwrite it?
+              </p>
+            )}
           </div>
         }
         onConfirm={async () => {
-          const items = await loadFiles();
-          setLoadedFiles(items);
-          setDialogID("load");
+          if (dialogID === "generic") {
+            const items = await loadFiles();
+            setLoadedFiles(items);
+            setDialogID("load");
+            return;
+          }
+
+          if (dialogID === "overwrite") {
+            const formData = getValues();
+            await SaveWorkout(JSON.stringify(formData), formData.name);
+
+            setDialogID("");
+            return;
+          }
         }}
         onCancel={() => setDialogID("")}
       />
