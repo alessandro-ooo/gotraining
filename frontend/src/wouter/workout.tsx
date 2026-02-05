@@ -33,11 +33,12 @@ import DialogContentLoads, {
 import { useState } from "react";
 import DialogContentGeneric from "@/components/gotraining/dialogs/contents/generic";
 import Icon from "@/components/gotraining/icon/icon";
+import { useTranslation } from "react-i18next";
 
 const DIALOG_ID = {
   NO_DIALOG: "",
   LOAD: "load",
-  GENERIC: "generic",
+  UNSAVED: "unsaved",
   OVERWRITE: "overwrite",
 };
 
@@ -218,6 +219,7 @@ function Day({ dayIndex, control, register, onRemove }: DayProps) {
 
 const Workout = () => {
   const [, navigate] = useLocation();
+  const { t } = useTranslation();
 
   type DIALOG_ID = (typeof DIALOG_ID)[keyof typeof DIALOG_ID];
   const [dialogID, setDialogID] = useState<DIALOG_ID>("NO_DIALOG");
@@ -279,7 +281,7 @@ const Workout = () => {
               variant="secondary"
               onClick={() => appendDay({ name: "", inputs: [] })}
             >
-              <p>Aggiungi giorno</p>
+              <p>{t("editor.day.add")}</p>
             </GTButton>
 
             <GTButton
@@ -325,7 +327,7 @@ const Workout = () => {
               variant="default"
               onClick={async () => {
                 if (isDirty) {
-                  setDialogID("generic");
+                  setDialogID("unsaved");
                   return;
                 }
 
@@ -381,12 +383,12 @@ const Workout = () => {
       />
 
       <DialogContentGeneric
-        show={dialogID === "generic" || dialogID === "overwrite"}
+        show={dialogID === "unsaved" || dialogID === "overwrite"}
         title="Generic Dialog"
         description="Attention"
         content={
           <div>
-            {dialogID === "generic" && (
+            {dialogID === "unsaved" && (
               <p>
                 There are some changes that have not been saved. Are you sure
                 you want to load?
@@ -402,7 +404,7 @@ const Workout = () => {
           </div>
         }
         onConfirm={async () => {
-          if (dialogID === "generic") {
+          if (dialogID === "unsaved") {
             const items = await loadFiles();
             setLoadedFiles(items);
             setDialogID("load");
