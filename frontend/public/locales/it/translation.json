@@ -1,0 +1,60 @@
+{
+  "editor": {
+    "workoutName": "Nome allenamento",
+    "day": {
+      "remove": "Rimuovi giorno",
+      "add": "Aggiungi giorno",
+      "nameOf": "Nome del giorno"
+    },
+    "exercise": {
+      "nameOf": "Esercizio",
+      "removeExercise": "Rimuovi esercizio",
+      "add": "Aggiungi esercizio",
+      "repetitions": "Ripetizioni",
+      "sets": "Serie"
+    },
+    "noExercises": "Nessun esercizio",
+    "workoutNameRequired": "Nome della scheda è obbligatorio",
+    "exportPDF": "Esporta PDF",
+    "saveWorkout": "Salva allenamento",
+    "loadWorkout": "Carica allenamento",
+    "settings": "Impostazioni"
+  },
+
+  "generalInputs": {
+    "confirm": "Conferma",
+    "discard": "Scarta"
+  },
+
+  "dialogs": {
+    "overwrite": {
+      "title": "Un file con questo nome esiste già",
+      "content": "Un allenamento con questo nome esiste già. Vuoi sovrascriverlo?"
+    },
+
+    "unsavedChanges": {
+      "title": "Hai modifiche non salvate",
+      "content": "Ci sono alcune modifiche che non sono state salvate. Sei sicuro di voler caricare?"
+    },
+
+    "load": {
+      "title": "Carica",
+      "description": "Seleziona un file da caricare.",
+      "table": {
+        "fileName": "Nome",
+        "lastModified": "Ultimo aggiornamento"
+      },
+      "inputs": {
+        "confirm": "Carica",
+        "discard": "Scarta"
+      }
+    }
+  },
+
+  "settings": {
+    "interface": {
+      "lang": "Lingua",
+      "theme": "Tema"
+    }
+  }
+}

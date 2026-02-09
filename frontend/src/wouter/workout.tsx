@@ -124,8 +124,6 @@ const GeneratedPDF = ({ data }: { data: FormData }) => (
               <Text style={[styles.tableCell, styles.colExercise]}>
                 Exercise
               </Text>
-              <Text style={[styles.tableCell, styles.colReps]}>Reps</Text>
-              <Text style={[styles.tableCell, styles.colSets]}>Sets</Text>
             </View>
 
             {day.inputs && day.inputs.length > 0 ? (
@@ -166,11 +164,13 @@ function Day({ dayIndex, control, register, onRemove }: DayProps) {
     name: `days.${dayIndex}.inputs`,
   });
 
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-col gap-5 bg-zinc-800 p-4 rounded-lg">
       <div className="flex flex-row gap-2 rounded-lg pb-2">
         <GTButton variant="discard" onClick={onRemove}>
-          <p>Rimuovi giorno</p>
+          <p>{t("editor.day.remove")}</p>
         </GTButton>
         <GTButton
           variant="secondary"
@@ -182,13 +182,13 @@ function Day({ dayIndex, control, register, onRemove }: DayProps) {
             })
           }
         >
-          <p>Aggiungi esercizio</p>
+          <p>{t("editor.exercise.add")}</p>
         </GTButton>
       </div>
 
       <TextInput
-        label={`Nome del giorno`}
-        placeholder="Chest day, leg day, Martedì..."
+        label={t("editor.day.nameOf")}
+        placeholder={t("editor.day.nameOf")}
         {...register(`days.${dayIndex}.name`)}
       />
 
@@ -196,19 +196,19 @@ function Day({ dayIndex, control, register, onRemove }: DayProps) {
         {inputs.map((input, inputIndex) => (
           <div key={input.id} className="flex gap-2">
             <TextInput
-              placeholder="Exercise"
+              placeholder={t("editor.exercise.nameOf")}
               {...register(`days.${dayIndex}.inputs.${inputIndex}.exercise`)}
             />
             <TextInput
-              placeholder="Repetitions"
+              placeholder={t("editor.exercise.repetitions")}
               {...register(`days.${dayIndex}.inputs.${inputIndex}.repetitions`)}
             />
             <TextInput
-              placeholder="Sets"
+              placeholder={t("editor.exercise.sets")}
               {...register(`days.${dayIndex}.inputs.${inputIndex}.sets`)}
             />
             <GTButton variant="discard" onClick={() => removeInput(inputIndex)}>
-              <p>Rimuovi esercizio</p>
+              <p>{t("editor.exercise.removeExercise")}</p>
             </GTButton>
           </div>
         ))}
@@ -290,7 +290,7 @@ const Workout = () => {
                 downloadPDF();
               }}
             >
-              <p>Esporta PDF</p>
+              <p>{t("editor.exportPDF")}</p>
             </GTButton>
             <GTButton
               variant="tertiary"
@@ -312,14 +312,14 @@ const Workout = () => {
                 await SaveWorkout(JSON.stringify(formData), formData.name);
               }}
             >
-              <p>Salva scheda</p>
+              <p>{t("editor.saveWorkout")}</p>
             </GTButton>
           </div>
 
           <div className="flex flex-row gap-2">
             <GTButton variant="default" onClick={() => navigate("/settings")}>
               <div className="flex flex-row gap-2">
-                <p>Impostazioni</p>
+                <p>{t("editor.settings")}</p>
                 <Icon name="settings" color="#FFFFFF" />
               </div>
             </GTButton>
@@ -337,7 +337,7 @@ const Workout = () => {
               }}
             >
               <div className="flex flex-row gap-2">
-                <p>Carica scheda</p>
+                <p>{t("editor.loadWorkout")}</p>
                 <Icon name="load" color="#FFFFFF" />
               </div>
             </GTButton>
@@ -345,7 +345,7 @@ const Workout = () => {
         </div>
 
         <TextInput
-          label="Nome della scheda"
+          label={t("editor.workoutName")}
           hasError={errors.name?.message}
           placeholder="Chest day, full body, ecc..."
           {...register("name", {

@@ -1,5 +1,6 @@
 import GTButton from "../../buttons/button";
 import DialogManager from "../DialogManager";
+import { useTranslation } from "react-i18next";
 
 type DialogContentGenericProps = {
   show: boolean;
@@ -18,6 +19,8 @@ const DialogContentGeneric = ({
   description,
   title,
 }: DialogContentGenericProps) => {
+  const { t } = useTranslation();
+
   return (
     <DialogManager
       show={show}
@@ -26,10 +29,10 @@ const DialogContentGeneric = ({
       description={description}
       options={[
         <GTButton variant="secondary" onClick={() => onConfirm()}>
-          Conferma
+          {t("generalInputs.confirm")}
         </GTButton>,
         <GTButton variant="tertiary" onClick={() => onCancel()}>
-          Annulla
+          {t("generalInputs.discard")}
         </GTButton>,
       ]}
     />

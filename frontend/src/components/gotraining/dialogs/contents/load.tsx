@@ -19,6 +19,7 @@ import {
 import GTButton from "../../buttons/button";
 import DialogManager from "../DialogManager";
 import Icon from "../../icon/icon";
+import { useTranslation } from "react-i18next";
 
 export type SavedItems = {
   name: string;
@@ -34,45 +35,6 @@ type DialogContentLoadsProps = {
   selectedItemIndex?: number;
 };
 
-const columns: ColumnDef<SavedItems>[] = [
-  {
-    accessorKey: "name",
-    header: ({ column }) => {
-      return (
-        <GTButton
-          variant="table"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Name
-        </GTButton>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="px-4">
-        {<p className="font-normal ">{row.getValue("name")}</p>}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "lastModified",
-    header: ({ column }) => {
-      return (
-        <GTButton
-          variant="table"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Last Modified
-        </GTButton>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="px-4">
-        {<p className="font-normal ">{row.getValue("lastModified")}</p>}
-      </div>
-    ),
-  },
-];
-
 const DialogContentLoads = ({
   show,
   items,
@@ -83,6 +45,8 @@ const DialogContentLoads = ({
 }: DialogContentLoadsProps) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [rowSelection, setRowSelection] = React.useState({});
+
+  const { t } = useTranslation();
 
   React.useEffect(() => {
     if (
@@ -95,6 +59,45 @@ const DialogContentLoads = ({
       setRowSelection({});
     }
   }, [selectedItemIndex, items.length]);
+
+  const columns: ColumnDef<SavedItems>[] = [
+    {
+      accessorKey: "name",
+      header: ({ column }) => {
+        return (
+          <GTButton
+            variant="table"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            {t("dialogs.load.table.fileName")}
+          </GTButton>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="px-4">
+          {<p className="font-normal ">{row.getValue("name")}</p>}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "lastModified",
+      header: ({ column }) => {
+        return (
+          <GTButton
+            variant="table"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            {t("dialogs.load.table.lastModified")}
+          </GTButton>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="px-4">
+          {<p className="font-normal ">{row.getValue("lastModified")}</p>}
+        </div>
+      ),
+    },
+  ];
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
@@ -169,8 +172,8 @@ const DialogContentLoads = ({
           </Table>
         </ScrollArea>
       }
-      title="Ciao"
-      description="Test"
+      title={t("dialogs.load.title")}
+      description={t("dialogs.load.description")}
       options={[
         <GTButton
           variant="default"
@@ -178,12 +181,12 @@ const DialogContentLoads = ({
           onClick={() => onLoadClick()}
         >
           <div className="flex flex-row gap-2">
-            <p>Carica</p>
+            <p>{t("dialogs.load.inputs.confirm")}</p>
             <Icon name="load" color="#FFFFFF" />
           </div>
         </GTButton>,
         <GTButton variant="default" onClick={() => onCancelClick()}>
-          Annulla
+          {t("dialogs.load.inputs.discard")}
         </GTButton>,
       ]}
     />
