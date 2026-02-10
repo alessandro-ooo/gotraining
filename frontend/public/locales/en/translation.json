@@ -1,0 +1,60 @@
+{
+  "editor": {
+    "workoutName": "Workout name",
+    "day": {
+      "remove": "Remove day",
+      "add": "Add day",
+      "nameOf": "Name of the day"
+    },
+    "exercise": {
+      "nameOf": "Exercise",
+      "removeExercise": "Remove exercise",
+      "add": "Add exercise",
+      "repetitions": "Repetitions",
+      "sets": "Sets"
+    },
+    "noExercises": "No exercises",
+    "workoutNameRequired": "Workout name is required",
+    "exportPDF": "Export PDF",
+    "saveWorkout": "Save workout",
+    "loadWorkout": "Load workout",
+    "settings": "Settings"
+  },
+
+  "generalInputs": {
+    "confirm": "Confirm",
+    "discard": "Discard"
+  },
+
+  "dialogs": {
+    "overwrite": {
+      "title": "A file with this name already exists",
+      "content": "A workout with this name already exists. Do you want to overwrite it?"
+    },
+
+    "unsavedChanges": {
+      "title": "You have unsaved changes",
+      "content": "There are some changes that have not been saved. Are you sure you want to load?"
+    },
+
+    "load": {
+      "title": "Load",
+      "description": "Select a file to load.",
+      "table": {
+        "fileName": "Name",
+        "lastModified": "Last modified"
+      },
+      "inputs": {
+        "confirm": "Load",
+        "discard": "Discard"
+      }
+    }
+  },
+
+  "settings": {
+    "interface": {
+      "lang": "Language",
+      "theme": "Theme"
+    }
+  }
+}
