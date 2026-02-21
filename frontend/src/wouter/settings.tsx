@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/incompatible-library */
 import SelectInput from "@/components/gotraining/inputs/SelectInput";
 import { useForm } from "react-hook-form";
-
+import { useTranslation } from "react-i18next";
 import PDFPreview from "@/components/pdf/preview";
 
 import {
@@ -9,29 +9,13 @@ import {
   SavePDFEditorSettings,
 } from "../../bindings/gotraining/services/settings/pdfeditorservice";
 import { useEffect } from "react";
+import type { SettingsForm, FormData } from "@/components/pdf/types";
+import { Slider } from "@/components/ui/slider";
+import GTButton from "@/components/gotraining/buttons/button";
+import Icon from "@/components/gotraining/icon/icon";
+import { navigate } from "wouter/use-browser-location";
 
-type SettingsForm = {
-  language: string;
-  theme: string;
-  tabColor: string;
-  borderRadius: string;
-  fontSize: string;
-  tableBorderColor: string;
-};
-
-type FormData = {
-  name: string;
-  days: {
-    name: string;
-    inputs: {
-      exercise: string;
-      repetitions: number;
-      sets: number;
-    }[];
-  }[];
-};
-
-// Dummy data for preview
+// TODO: use query
 const dummyData: FormData = {
   name: "Sample Workout",
   days: [
@@ -46,39 +30,85 @@ const dummyData: FormData = {
 };
 
 const Settings = () => {
-  const { register, handleSubmit, reset, watch, setValue } =
-    useForm<SettingsForm>({
-      defaultValues: {
-        borderRadius: "0",
-        fontSize: "11",
-        tabColor: "#f3f3f3",
-        tableBorderColor: "#e0e0e0",
-        language: "it",
-        theme: "dark",
+  const { t } = useTranslation();
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    setValue,
+    formState: { isDirty },
+  } = useForm<SettingsForm>({
+    defaultValues: {
+      language: "it",
+      theme: "dark",
+      header: {
+        textColor: "#000000",
+        backgroundColor: "#f3f3f3",
+        fontSize: "12",
+        bold: true,
       },
-    });
+      table: {
+        borderColor: "#e0e0e0",
+        borderRadius: "0",
+        exerciseBackgroundColor: "#ffffff",
+        cellColor: "#000000",
+        cellFontSize: "11",
+        exerciseBold: false,
+      },
+    },
+  });
 
   useEffect(() => {
     async function loadPDFEditorSettings() {
       const settings = await LoadPDFEditorSettings();
-      setValue("borderRadius", JSON.parse(settings).borderRadius);
-      setValue("fontSize", JSON.parse(settings).fontSize);
-      setValue("tabColor", JSON.parse(settings).tabColor);
-      setValue("tableBorderColor", JSON.parse(settings).tableBorderColor);
+      const parsed = JSON.parse(settings);
+      setValue("language", parsed.language);
+      setValue("theme", parsed.theme);
+      setValue("header.textColor", parsed.header?.textColor);
+      setValue("header.backgroundColor", parsed.header?.backgroundColor);
+      setValue("header.fontSize", parsed.header?.fontSize);
+      setValue("header.bold", parsed.header?.bold);
+      setValue("table.borderColor", parsed.table?.borderColor);
+      setValue("table.borderRadius", parsed.table?.borderRadius);
+      setValue(
+        "table.exerciseBackgroundColor",
+        parsed.table?.exerciseBackgroundColor,
+      );
+      setValue("table.cellColor", parsed.table?.cellColor);
+      setValue("table.cellFontSize", parsed.table?.cellFontSize);
+      setValue("table.exerciseBold", parsed.table?.exerciseBold);
+
+      reset();
     }
     loadPDFEditorSettings();
-  }, [setValue]);
+  }, [setValue, reset]);
 
   return (
     <form className="bg-zinc-900 h-screen w-full p-8">
       <div className="flex flex-col gap-10">
+        <div className="flex flex-row justify-between rounded-lg">
+          <div className="flex flex-row gap-2">
+            <div className="flex flex-row gap-2">
+              <GTButton variant="default" onClick={() => navigate("/")}>
+                <div className="flex flex-row gap-2">
+                  <Icon name="chevron" className="-rotate-90" color="#FFFFFF" />
+                  <p>{t("editor.back")}</p>
+                </div>
+              </GTButton>
+            </div>
+          </div>
+        </div>
         <div className="flex flex-col gap-2">
-          <h1 className="text-2xl font-bold text-white">Interfaccia</h1>
+          <h1 className="text-2xl font-bold text-white">
+            {t("editor.settings")}
+          </h1>
           <div className="flex flex-col gap-6 bg-zinc-800 p-6 rounded-lg w-max">
             <SelectInput
               disabled
-              label="Lingua"
-              placeholder="Choose your preference"
+              label={t("settings.interface.lang")}
+              placeholder={t("settings.interface.lang")}
               selectedItem={{ value: "it", label: "Italiano" }}
               items={[
                 { value: "it", label: "Italiano" },
@@ -88,8 +118,8 @@ const Settings = () => {
 
             <SelectInput
               disabled
-              label="Tema"
-              placeholder="Choose your preference"
+              label={t("settings.interface.theme")}
+              placeholder={t("settings.interface.theme")}
               selectedItem={{ value: "dark", label: "Dark" }}
               items={[
                 { value: "light", label: "Light" },
@@ -98,68 +128,156 @@ const Settings = () => {
             />
           </div>
 
-          <h2 className="text-xl font-bold text-white mt-6">PDF Export</h2>
+          <h2 className="text-xl font-bold text-white mt-6">
+            {t("editor.exportPDF")}
+          </h2>
           <div className="flex flex-row gap-6">
             <div className="flex flex-col gap-4 bg-zinc-800 p-6 rounded-lg w-full max-w-xl">
-              <label className="flex flex-col text-white">
-                <span className="mb-1">Header / Tab Color</span>
-                <input
-                  {...register("tabColor")}
-                  type="color"
-                  className="w-16 h-8"
-                />
-              </label>
-
-              <label className="flex flex-col text-white">
-                <span className="mb-1">Table Border Color</span>
-                <input
-                  {...register("tableBorderColor")}
-                  type="color"
-                  className="w-16 h-8"
-                />
-              </label>
-
-              <label className="flex flex-col text-white">
+              <h3 className="text-lg font-semibold text-white mt-4">
+                {t("settings.pdfEditor.headerTitle")}
+              </h3>
+              <div className="flex flex-col text-white">
                 <span className="mb-1">
-                  Rounded Corners ({watch("borderRadius") || 0}px)
+                  {t("settings.pdfEditor.headerText.color")}
                 </span>
                 <input
-                  {...register("borderRadius")}
-                  type="range"
+                  {...register("header.textColor")}
+                  type="color"
+                  className="w-16 h-8"
+                />
+              </div>
+              <div className="flex flex-col text-white">
+                <span className="mb-1">
+                  {t("settings.pdfEditor.tableHeader.backgroundColor")}
+                </span>
+                <input
+                  {...register("header.backgroundColor")}
+                  type="color"
+                  className="w-16 h-8"
+                />
+              </div>
+              <div className="flex flex-col text-white">
+                <span className="mb-1">
+                  {t("settings.pdfEditor.headerText.fontSize")} (
+                  {watch("header.fontSize") || 0}px)
+                </span>
+                <Slider
+                  value={[parseInt(watch("header.fontSize")) || 12]}
+                  onValueChange={(value) =>
+                    setValue("header.fontSize", value[0].toString(), {
+                      shouldDirty: true,
+                    })
+                  }
+                  min={8}
+                  max={24}
+                />
+              </div>
+              <div className="flex items-center text-white">
+                <input
+                  {...register("header.bold")}
+                  type="checkbox"
+                  className="mr-2"
+                />
+                {t("settings.pdfEditor.headerText.fontWeight")}
+              </div>
+
+              <h3 className="text-lg font-semibold text-white mt-4">
+                {t("settings.pdfEditor.cellTitle")}
+              </h3>
+
+              <div className="flex flex-col text-white">
+                <span className="mb-1">
+                  {t("settings.pdfEditor.table.borderColor")}
+                </span>
+                <input
+                  {...register("table.borderColor")}
+                  type="color"
+                  className="w-16 h-8"
+                />
+              </div>
+
+              <div className="flex flex-col text-white">
+                <span className="mb-1">
+                  {t("settings.pdfEditor.table.borderRadius")} (
+                  {watch("table.borderRadius") || 0}px)
+                </span>
+                <Slider
+                  value={[parseInt(watch("table.borderRadius")) || 0]}
+                  onValueChange={(value) =>
+                    setValue("table.borderRadius", value[0].toString(), {
+                      shouldDirty: true,
+                    })
+                  }
                   min={0}
                   max={24}
                 />
-              </label>
+              </div>
 
-              <label className="flex flex-col text-white">
+              <div className="flex flex-col text-white">
                 <span className="mb-1">
-                  Base Font Size ({watch("fontSize") || 0}px)
+                  {t("settings.pdfEditor.tableRow.backgroundColor")}
                 </span>
                 <input
-                  {...register("fontSize")}
-                  type="range"
+                  {...register("table.exerciseBackgroundColor")}
+                  type="color"
+                  className="w-16 h-8"
+                />
+              </div>
+
+              <div className="flex flex-col text-white">
+                <span className="mb-1">
+                  {t("settings.pdfEditor.tableCell.color")}
+                </span>
+                <input
+                  {...register("table.cellColor")}
+                  type="color"
+                  className="w-16 h-8"
+                />
+              </div>
+              <div className="flex flex-col text-white">
+                <span className="mb-1">
+                  {t("settings.pdfEditor.tableCell.fontSize")} (
+                  {watch("table.cellFontSize") || 0}px)
+                </span>
+                <Slider
+                  value={[parseInt(watch("table.cellFontSize")) || 11]}
+                  onValueChange={(value) =>
+                    setValue("table.cellFontSize", value[0].toString(), {
+                      shouldDirty: true,
+                    })
+                  }
                   min={8}
                   max={20}
                 />
-              </label>
+              </div>
+
+              <div className="flex items-center text-white">
+                <input
+                  {...register("table.exerciseBold")}
+                  type="checkbox"
+                  className="mr-2"
+                />
+                {t("settings.pdfEditor.exerciseText.fontWeight")}
+              </div>
 
               <div className="flex flex-row gap-2 mt-2">
-                <button
-                  onClick={handleSubmit((values) => {
-                    SavePDFEditorSettings(JSON.stringify(values));
-                  })}
-                  className="px-4 py-2 bg-green-600 rounded text-white"
+                <GTButton
+                  disabled={!isDirty}
+                  variant="secondary"
+                  onClick={handleSubmit((values) =>
+                    SavePDFEditorSettings(JSON.stringify(values)),
+                  )}
                 >
-                  Save
-                </button>
-                <button
+                  {t("generalInputs.confirm")}
+                </GTButton>
+                <GTButton
+                  variant="tertiary"
                   onClick={() => {
                     reset();
                   }}
-                  className="px-4 py-2 bg-gray-600 rounded text-white"
                 >
                   Reset
-                </button>
+                </GTButton>
               </div>
             </div>
 
