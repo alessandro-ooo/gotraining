@@ -18,7 +18,8 @@
     "exportPDF": "Esporta PDF",
     "saveWorkout": "Salva allenamento",
     "loadWorkout": "Carica allenamento",
-    "settings": "Impostazioni"
+    "settings": "Impostazioni",
+    "back": "Indietro"
   },
 
   "generalInputs": {
@@ -55,6 +56,37 @@
     "interface": {
       "lang": "Lingua",
       "theme": "Tema"
+    },
+    "pdfEditor": {
+      "headerTitle": "Intestazione",
+      "cellTitle": "Cella",
+      "table": {
+        "borderColor": "Colore del bordo",
+        "borderRadius": "Raggio del bordo"
+      },
+      "tableRow": {
+        "backgroundColor": "Colore di sfondo della cella",
+        "flexDirection": "Direzione del flesso",
+        "borderRadius": "Raggio del bordo della cella"
+      },
+      "tableHeader": {
+        "backgroundColor": "Colore di sfondo dell'intestazione"
+      },
+      "headerText": {
+        "color": "Colore del testo dell'intestazione",
+        "fontSize": "Dimensione del carattere dell'intestazione",
+        "fontWeight": "Grassetto dell'intestazione"
+      },
+      "tableCell": {
+        "padding": "Padding della cella",
+        "borderRightWidth": "Larghezza del bordo destro",
+        "borderRightColor": "Colore del bordo destro",
+        "color": "Colore del testo della cella",
+        "fontSize": "Dimensione del carattere della cella"
+      },
+      "exerciseText": {
+        "fontWeight": "Grassetto dell'esercizio"
+      }
     }
   }
 }
