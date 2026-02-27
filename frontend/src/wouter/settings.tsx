@@ -10,7 +10,7 @@ import {
 } from "../../bindings/gotraining/services/settings/pdfeditorservice";
 import { useEffect } from "react";
 import type { SettingsForm, FormData } from "@/components/pdf/types";
-import { Slider } from "@/components/ui/slider";
+import Slider from "@/components/gotraining/inputs/Slider";
 import GTButton from "@/components/gotraining/buttons/button";
 import Icon from "@/components/gotraining/icon/icon";
 import { navigate } from "wouter/use-browser-location";
@@ -156,22 +156,18 @@ const Settings = () => {
                   className="w-16 h-8"
                 />
               </div>
-              <div className="flex flex-col text-white">
-                <span className="mb-1">
-                  {t("settings.pdfEditor.headerText.fontSize")} (
-                  {watch("header.fontSize") || 0}px)
-                </span>
-                <Slider
-                  value={[parseInt(watch("header.fontSize")) || 12]}
-                  onValueChange={(value) =>
-                    setValue("header.fontSize", value[0].toString(), {
-                      shouldDirty: true,
-                    })
-                  }
-                  min={8}
-                  max={24}
-                />
-              </div>
+              <Slider
+                label={t("settings.pdfEditor.headerText.fontSize")}
+                currentValue={parseInt(watch("header.fontSize"))}
+                onChange={(value) =>
+                  setValue("header.fontSize", value.toString(), {
+                    shouldDirty: true,
+                  })
+                }
+                min={8}
+                max={24}
+              />
+
               <div className="flex items-center text-white">
                 <input
                   {...register("header.bold")}
@@ -196,22 +192,17 @@ const Settings = () => {
                 />
               </div>
 
-              <div className="flex flex-col text-white">
-                <span className="mb-1">
-                  {t("settings.pdfEditor.table.borderRadius")} (
-                  {watch("table.borderRadius") || 0}px)
-                </span>
-                <Slider
-                  value={[parseInt(watch("table.borderRadius")) || 0]}
-                  onValueChange={(value) =>
-                    setValue("table.borderRadius", value[0].toString(), {
-                      shouldDirty: true,
-                    })
-                  }
-                  min={0}
-                  max={24}
-                />
-              </div>
+              <Slider
+                label={t("settings.pdfEditor.table.borderRadius")}
+                currentValue={parseInt(watch("table.borderRadius")) || 0}
+                onChange={(value) =>
+                  setValue("table.borderRadius", value.toString(), {
+                    shouldDirty: true,
+                  })
+                }
+                min={0}
+                max={24}
+              />
 
               <div className="flex flex-col text-white">
                 <span className="mb-1">
@@ -234,22 +225,18 @@ const Settings = () => {
                   className="w-16 h-8"
                 />
               </div>
-              <div className="flex flex-col text-white">
-                <span className="mb-1">
-                  {t("settings.pdfEditor.tableCell.fontSize")} (
-                  {watch("table.cellFontSize") || 0}px)
-                </span>
-                <Slider
-                  value={[parseInt(watch("table.cellFontSize")) || 11]}
-                  onValueChange={(value) =>
-                    setValue("table.cellFontSize", value[0].toString(), {
-                      shouldDirty: true,
-                    })
-                  }
-                  min={8}
-                  max={20}
-                />
-              </div>
+
+              <Slider
+                label={t("settings.pdfEditor.tableCell.fontSize")}
+                currentValue={parseInt(watch("table.cellFontSize")) || 11}
+                onChange={(value) =>
+                  setValue("table.cellFontSize", value.toString(), {
+                    shouldDirty: true,
+                  })
+                }
+                min={8}
+                max={20}
+              />
 
               <div className="flex items-center text-white">
                 <input
