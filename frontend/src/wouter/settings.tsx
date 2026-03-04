@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/incompatible-library */
+import i18n from "@/i18n";
 import SelectInput from "@/components/gotraining/inputs/SelectInput";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -41,7 +42,6 @@ const Settings = () => {
     formState: { isDirty },
   } = useForm<SettingsForm>({
     defaultValues: {
-      language: "it",
       theme: "dark",
       header: {
         textColor: "#000000",
@@ -64,7 +64,6 @@ const Settings = () => {
     async function loadPDFEditorSettings() {
       const settings = await LoadPDFEditorSettings();
       const parsed = JSON.parse(settings);
-      setValue("language", parsed.language);
       setValue("theme", parsed.theme);
       setValue("header.textColor", parsed.header?.textColor);
       setValue("header.backgroundColor", parsed.header?.backgroundColor);
@@ -86,7 +85,7 @@ const Settings = () => {
   }, [setValue, reset]);
 
   return (
-    <form className="bg-zinc-900 h-screen w-full p-8">
+    <form className="bg-zinc-900 h-max w-full p-8">
       <div className="flex flex-col gap-10">
         <div className="flex flex-row justify-between rounded-lg">
           <div className="flex flex-row gap-2">
@@ -106,10 +105,16 @@ const Settings = () => {
           </h1>
           <div className="flex flex-col gap-6 bg-zinc-800 p-6 rounded-lg w-max">
             <SelectInput
-              disabled
               label={t("settings.interface.lang")}
               placeholder={t("settings.interface.lang")}
-              selectedItem={{ value: "it", label: "Italiano" }}
+              selectedItem={
+                i18n.language === "it"
+                  ? { value: "it", label: "Italiano" }
+                  : { value: "en", label: "English" }
+              }
+              onValueChange={(value) => {
+                i18n.changeLanguage(value);
+              }}
               items={[
                 { value: "it", label: "Italiano" },
                 { value: "en", label: "English" },
@@ -251,9 +256,11 @@ const Settings = () => {
                 <GTButton
                   disabled={!isDirty}
                   variant="secondary"
-                  onClick={handleSubmit((values) =>
-                    SavePDFEditorSettings(JSON.stringify(values)),
-                  )}
+                  onClick={() => {
+                    handleSubmit((values) =>
+                      SavePDFEditorSettings(JSON.stringify(values)),
+                    );
+                  }}
                 >
                   {t("generalInputs.confirm")}
                 </GTButton>
