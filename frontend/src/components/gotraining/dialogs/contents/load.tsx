@@ -21,7 +21,7 @@ import DialogManager from "../DialogManager";
 import Icon from "../../icon/icon";
 import { useTranslation } from "react-i18next";
 
-export type SavedItems = {
+type SavedItems = {
   name: string;
   lastModified: string;
 };
