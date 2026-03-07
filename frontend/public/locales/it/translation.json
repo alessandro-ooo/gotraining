@@ -93,6 +93,8 @@
   "toasts": {
     "settingsSaved": "Le impostazioni sono state salvate con successo.",
     "workoutSaved": "L'allenamento è stato salvato con successo.",
-    "workoutLoaded": "L'allenamento è stato caricato con successo."
+    "workoutLoaded": "L'allenamento è stato caricato con successo.",
+    "workoutSaveError": "Si è verificato un errore durante il salvataggio dell'allenamento.",
+    "workoutLoadError": "Si è verificato un errore durante il caricamento dell'allenamento."
   }
 }

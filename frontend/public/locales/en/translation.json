@@ -93,6 +93,8 @@
   "toasts": {
     "settingsSaved": "Settings have been saved successfully.",
     "workoutSaved": "Workout has been saved successfully.",
-    "workoutLoaded": "Workout has been loaded successfully."
+    "workoutLoaded": "Workout has been loaded successfully.",
+    "workoutSaveError": "An error occurred while saving the workout.",
+    "workoutLoadError": "An error occurred while loading the workout."
   }
 }
