@@ -8,6 +8,7 @@ import (
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 
+	pdfeditor "gotraining/services/settings"
 	"gotraining/services/workout"
 )
 
@@ -41,6 +42,7 @@ func main() {
 		Description: "A demo of using raw HTML & CSS",
 		Services: []application.Service{
 			application.NewService(&workout.WorkoutService{}),
+			application.NewService(&pdfeditor.PDFEditorService{}),
 		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(assets),

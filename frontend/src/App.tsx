@@ -1,17 +1,19 @@
 import { Route, Switch } from "wouter";
 import { lazy } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const WorkoutPage = lazy(() => import("./wouter/workout"));
 const SettingsPage = lazy(() => import("./wouter/settings"));
+const queryClient = new QueryClient();
 
 const App = () => (
-  <>
+  <QueryClientProvider client={queryClient}>
     <Switch>
       <Route path="/" component={WorkoutPage} />
       <Route path="/settings" component={SettingsPage} />
       <Route>404: No such page!</Route>
     </Switch>
-  </>
+  </QueryClientProvider>
 );
 
 export default App;

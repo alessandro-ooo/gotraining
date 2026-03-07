@@ -2,14 +2,9 @@
 
 // TODO: Little refactor, popups
 
-import {
-  Document,
-  Page,
-  pdf,
-  Text,
-  View,
-  StyleSheet,
-} from "@react-pdf/renderer";
+import { LoadPDFEditorSettings } from "../../bindings/gotraining/services/settings/pdfeditorservice";
+
+import { pdf } from "@react-pdf/renderer";
 import {
   useFieldArray,
   useForm,
@@ -34,6 +29,7 @@ import { useState } from "react";
 import DialogContentGeneric from "@/components/gotraining/dialogs/contents/generic";
 import Icon from "@/components/gotraining/icon/icon";
 import { useTranslation } from "react-i18next";
+import { GeneratedPDF } from "@/components/pdf/preview";
 
 const DIALOG_ID = {
   NO_DIALOG: "",
@@ -54,105 +50,12 @@ type FormData = {
   }[];
 };
 
-const styles = StyleSheet.create({
-  page: {
-    padding: 20,
-    backgroundColor: "#FFFFFF",
-    fontSize: 11,
-  },
-  section: {
-    marginBottom: 12,
-  },
-  dayTitle: {
-    fontSize: 14,
-    marginBottom: 8,
-    fontWeight: "bold",
-  },
-  table: {
-    // display: "table",
-    width: "auto",
-    borderWidth: 1,
-    borderColor: "#e0e0e0",
-    borderStyle: "solid",
-  },
-  tableRow: {
-    flexDirection: "row",
-  },
-  tableHeader: {
-    backgroundColor: "#f3f3f3",
-  },
-  tableCell: {
-    padding: 6,
-    borderRightWidth: 1,
-    borderRightColor: "#e0e0e0",
-    borderRightStyle: "solid",
-  },
-  colExercise: {
-    width: "60%",
-  },
-  colReps: {
-    width: "20%",
-    textAlign: "center",
-  },
-  colSets: {
-    width: "20%",
-    textAlign: "center",
-    borderRightWidth: 0,
-  },
-  noExercises: {
-    padding: 6,
-    color: "#666",
-  },
-});
-
 type DayProps = {
   dayIndex: number;
   control: Control<FormData>;
   register: UseFormRegister<FormData>;
   onRemove: () => void;
 };
-
-const GeneratedPDF = ({ data }: { data: FormData }) => (
-  <Document>
-    {data.days.map((day, index) => (
-      <Page key={index} size="A4" style={styles.page}>
-        <View style={styles.section}>
-          <Text style={styles.dayTitle}>{day.name || `Day ${index + 1}`}</Text>
-
-          <View style={styles.table}>
-            <View style={[styles.tableRow, styles.tableHeader]}>
-              <Text style={[styles.tableCell, styles.colExercise]}>
-                Exercise
-              </Text>
-            </View>
-
-            {day.inputs && day.inputs.length > 0 ? (
-              day.inputs.map((input, i) => (
-                <View style={styles.tableRow} key={i}>
-                  <Text style={[styles.tableCell, styles.colExercise]}>
-                    {input.exercise || ""}
-                  </Text>
-                  <Text style={[styles.tableCell, styles.colReps]}>
-                    {input.repetitions ?? ""}
-                  </Text>
-                  <Text style={[styles.tableCell, styles.colSets]}>
-                    {input.sets ?? ""}
-                  </Text>
-                </View>
-              ))
-            ) : (
-              <View style={styles.tableRow}>
-                <Text style={[styles.noExercises, { width: "100%" }]}>
-                  No exercises
-                </Text>
-              </View>
-            )}
-          </View>
-        </View>
-      </Page>
-    ))}
-  </Document>
-);
 
 function Day({ dayIndex, control, register, onRemove }: DayProps) {
   const {
@@ -230,7 +133,6 @@ const Workout = () => {
   const {
     control,
     register,
-    // watch,
     trigger,
     getValues,
     reset,
@@ -254,8 +156,12 @@ const Workout = () => {
   });
 
   const downloadPDF = async () => {
+    const PDFSettings = await LoadPDFEditorSettings();
     const data = getValues();
-    const blob = await pdf(<GeneratedPDF data={data} />).toBlob();
+
+    const blob = await pdf(
+      <GeneratedPDF data={data} settings={JSON.parse(PDFSettings)} />,
+    ).toBlob();
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -268,7 +174,7 @@ const Workout = () => {
     const workouts = await ListWorkouts();
     return workouts.map((w) => ({
       name: w.filename,
-      lastModified: "24 Gen 2024",
+      lastModified: "24 Gen 2024", // TODO: get real last modified date, currently not supported by backend
     }));
   };
 
