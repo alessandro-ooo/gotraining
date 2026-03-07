@@ -35,26 +35,7 @@ type JSONPDFEditor struct {
 	Table           Table   `json:"table"`
 }
 
-const defaultPDFEditorSettings = `{
-	"tabColor": "#f3f3f3",
-	"borderRadius": "6",
-	"fontSize": "11",
-	"tableBorderColor": "#e0e0e0",
-	"header": {
-		"textColor": "#000000",
-		"backgroundColor": "#f3f3f3",
-		"fontSize": "12",
-		"bold": true
-	},
-	"table": {
-		"borderColor": "#e0e0e0",
-		"borderRadius": "0",
-		"exerciseBackgroundColor": "#ffffff",
-		"cellColor": "#000000",
-		"cellFontSize": "11",
-		"exerciseBold": false,
-	}
-}`
+const defaultPDFEditorSettings = `{"header":{"textColor":"#211c1c","backgroundColor":"#ababab","bold":false,"fontSize":"13"},"table":{"borderColor":"#fafafa","exerciseBackgroundColor":"#dedede","cellColor":"#000000","exerciseBold":false,"cellFontSize":"12"}}`
 
 func (p *PDFEditorService) SavePDFEditorSettings(data string) (string, error) {
     homeDir, err := os.UserHomeDir()

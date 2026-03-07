@@ -9,14 +9,14 @@ import {
   LoadPDFEditorSettings,
   SavePDFEditorSettings,
 } from "../../bindings/gotraining/services/settings/pdfeditorservice";
-import { useEffect } from "react";
 import type { SettingsForm, FormData } from "@/components/pdf/types";
 import Slider from "@/components/gotraining/inputs/Slider";
 import GTButton from "@/components/gotraining/buttons/button";
 import Icon from "@/components/gotraining/icon/icon";
 import { navigate } from "wouter/use-browser-location";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 
-// TODO: use query
 const dummyData: FormData = {
   name: "Sample Workout",
   days: [
@@ -33,56 +33,37 @@ const dummyData: FormData = {
 const Settings = () => {
   const { t } = useTranslation();
 
+  const { data, isFetched } = useQuery({
+    queryKey: ["pdfEditorSettings"],
+    queryFn: async () => {
+      const settings = await LoadPDFEditorSettings();
+      const parsed: SettingsForm = JSON.parse(settings);
+      return {
+        header: parsed.header,
+        table: parsed.table,
+        theme: parsed.theme,
+      };
+    },
+  });
+
   const {
     register,
-    handleSubmit,
     reset,
     watch,
     setValue,
     formState: { isDirty },
   } = useForm<SettingsForm>({
-    defaultValues: {
-      theme: "dark",
-      header: {
-        textColor: "#000000",
-        backgroundColor: "#f3f3f3",
-        fontSize: "12",
-        bold: true,
-      },
-      table: {
-        borderColor: "#e0e0e0",
-        borderRadius: "0",
-        exerciseBackgroundColor: "#ffffff",
-        cellColor: "#000000",
-        cellFontSize: "11",
-        exerciseBold: false,
-      },
-    },
+    defaultValues: data,
   });
 
+  // this will reset the form with the laoded settings.
   useEffect(() => {
-    async function loadPDFEditorSettings() {
-      const settings = await LoadPDFEditorSettings();
-      const parsed = JSON.parse(settings);
-      setValue("theme", parsed.theme);
-      setValue("header.textColor", parsed.header?.textColor);
-      setValue("header.backgroundColor", parsed.header?.backgroundColor);
-      setValue("header.fontSize", parsed.header?.fontSize);
-      setValue("header.bold", parsed.header?.bold);
-      setValue("table.borderColor", parsed.table?.borderColor);
-      setValue("table.borderRadius", parsed.table?.borderRadius);
-      setValue(
-        "table.exerciseBackgroundColor",
-        parsed.table?.exerciseBackgroundColor,
-      );
-      setValue("table.cellColor", parsed.table?.cellColor);
-      setValue("table.cellFontSize", parsed.table?.cellFontSize);
-      setValue("table.exerciseBold", parsed.table?.exerciseBold);
+    reset(data);
+  }, [data, reset]);
 
-      reset();
-    }
-    loadPDFEditorSettings();
-  }, [setValue, reset]);
+  if (!isFetched) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <form className="bg-zinc-900 h-max w-full p-8">
@@ -257,9 +238,7 @@ const Settings = () => {
                   disabled={!isDirty}
                   variant="secondary"
                   onClick={() => {
-                    handleSubmit((values) =>
-                      SavePDFEditorSettings(JSON.stringify(values)),
-                    );
+                    SavePDFEditorSettings(JSON.stringify(watch()));
                   }}
                 >
                   {t("generalInputs.confirm")}
@@ -275,11 +254,13 @@ const Settings = () => {
               </div>
             </div>
 
-            <PDFPreview
-              data={dummyData}
-              settings={watch()}
-              key={JSON.stringify(watch())}
-            />
+            {isFetched && !!data && (
+              <PDFPreview
+                data={dummyData}
+                settings={watch()}
+                key={JSON.stringify(watch())}
+              />
+            )}
           </div>
         </div>
       </div>
