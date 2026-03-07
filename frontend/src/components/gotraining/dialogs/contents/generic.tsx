@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 type DialogContentGenericProps = {
   show: boolean;
   title: string;
-  description: string;
   content: React.ReactNode;
   onConfirm: () => void;
   onCancel: () => void;
@@ -16,7 +15,6 @@ const DialogContentGeneric = ({
   onConfirm,
   show,
   content,
-  description,
   title,
 }: DialogContentGenericProps) => {
   const { t } = useTranslation();
@@ -26,7 +24,6 @@ const DialogContentGeneric = ({
       show={show}
       content={content}
       title={title}
-      description={description}
       options={[
         <GTButton variant="secondary" onClick={() => onConfirm()}>
           {t("generalInputs.confirm")}

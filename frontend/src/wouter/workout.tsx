@@ -30,6 +30,7 @@ import DialogContentGeneric from "@/components/gotraining/dialogs/contents/gener
 import Icon from "@/components/gotraining/icon/icon";
 import { useTranslation } from "react-i18next";
 import { GeneratedPDF } from "@/components/pdf/preview";
+import { toast } from "sonner";
 
 const DIALOG_ID = {
   NO_DIALOG: "",
@@ -282,6 +283,9 @@ const Workout = () => {
           setValue("name", loadedFiles[isFileSelected!].name, {
             shouldDirty: true,
           });
+
+          setDialogID("");
+          toast.info(t("toasts.workoutLoaded"));
         }}
         onItemClick={setIsFileSelected}
         selectedItemIndex={isFileSelected}
@@ -290,22 +294,19 @@ const Workout = () => {
 
       <DialogContentGeneric
         show={dialogID === "unsaved" || dialogID === "overwrite"}
-        title="Generic Dialog"
-        description="Attention"
+        title={
+          dialogID === "unsaved"
+            ? t("dialogs.unsavedChanges.title")
+            : t("dialogs.overwrite.title")
+        }
         content={
           <div>
             {dialogID === "unsaved" && (
-              <p>
-                There are some changes that have not been saved. Are you sure
-                you want to load?
-              </p>
+              <p>{t("dialogs.unsavedChanges.content")}</p>
             )}
 
             {dialogID === "overwrite" && (
-              <p>
-                A workout with this name already exists. Do you want to
-                overwrite it?
-              </p>
+              <p>{t("dialogs.overwrite.content")}</p>
             )}
           </div>
         }
@@ -321,6 +322,7 @@ const Workout = () => {
             const formData = getValues();
             await SaveWorkout(JSON.stringify(formData), formData.name);
 
+            toast.success(t("toasts.workoutSaved"));
             setDialogID("");
             return;
           }

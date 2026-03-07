@@ -16,6 +16,7 @@ import Icon from "@/components/gotraining/icon/icon";
 import { navigate } from "wouter/use-browser-location";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 const dummyData: FormData = {
   name: "Sample Workout",
@@ -239,6 +240,7 @@ const Settings = () => {
                   variant="secondary"
                   onClick={() => {
                     SavePDFEditorSettings(JSON.stringify(watch()));
+                    toast.success(t("toasts.savedMessage"));
                   }}
                 >
                   {t("generalInputs.confirm")}

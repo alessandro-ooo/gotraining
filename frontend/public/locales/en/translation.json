@@ -88,5 +88,11 @@
         "fontWeight": "Exercise font weight"
       }
     }
+  },
+
+  "toasts": {
+    "settingsSaved": "Settings have been saved successfully.",
+    "workoutSaved": "Workout has been saved successfully.",
+    "workoutLoaded": "Workout has been loaded successfully."
   }
 }

@@ -24,7 +24,7 @@
 
   "generalInputs": {
     "confirm": "Conferma",
-    "discard": "Scarta"
+    "discard": "Annulla"
   },
 
   "dialogs": {
@@ -88,5 +88,11 @@
         "fontWeight": "Grassetto dell'esercizio"
       }
     }
+  },
+
+  "toasts": {
+    "settingsSaved": "Le impostazioni sono state salvate con successo.",
+    "workoutSaved": "L'allenamento è stato salvato con successo.",
+    "workoutLoaded": "L'allenamento è stato caricato con successo."
   }
 }
