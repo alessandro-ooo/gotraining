@@ -7,12 +7,16 @@ import { Create as $Create } from "@wailsio/runtime";
 
 export class JSONItem {
     "filename": string;
+    "lastModified": string;
     "content": string;
 
     /** Creates a new JSONItem instance. */
     constructor($$source: Partial<JSONItem> = {}) {
         if (!("filename" in $$source)) {
             this["filename"] = "";
+        }
+        if (!("lastModified" in $$source)) {
+            this["lastModified"] = "";
         }
         if (!("content" in $$source)) {
             this["content"] = "";
