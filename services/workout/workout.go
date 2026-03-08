@@ -89,8 +89,6 @@ func (j *WorkoutService) LoadWorkout(name string) (string, error) {
 
     filename := filepath.Join(dir, name+".json")
     data, err := os.ReadFile(filename)
-    if err != nil {
-        return "", err
-    }
+
     return string(data), nil
 }
