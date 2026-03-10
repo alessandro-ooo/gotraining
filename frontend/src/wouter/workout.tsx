@@ -1,9 +1,6 @@
 /* eslint-disable react-hooks/incompatible-library */
 
-// TODO: Little refactor, popups
-
 import { LoadPDFEditorSettings } from "../../bindings/gotraining/services/settings/pdfeditorservice";
-
 import { pdf } from "@react-pdf/renderer";
 import {
   useFieldArray,
@@ -19,6 +16,7 @@ import {
   SaveWorkout,
   ListWorkouts,
   LoadWorkout,
+  ExportFile,
 } from "../../bindings/gotraining/services/workout/workoutservice";
 
 import { useLocation } from "wouter";
@@ -30,6 +28,8 @@ import { useTranslation } from "react-i18next";
 import { GeneratedPDF } from "@/components/pdf/preview";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Dialogs } from "@wailsio/runtime";
+import { blobToBase64 } from "@/lib/utils";
 
 const DIALOG_ID = {
   NO_DIALOG: "",
@@ -194,12 +194,21 @@ const Workout = () => {
     const blob = await pdf(
       <GeneratedPDF data={data} settings={JSON.parse(PDFSettings)} />,
     ).toBlob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "training-plan.pdf";
-    a.click();
-    URL.revokeObjectURL(url);
+
+    await blob.arrayBuffer();
+
+    const filePath = await Dialogs.SaveFile({
+      AllowsOtherFiletypes: false,
+      Filename: data.name,
+      HideExtension: true,
+    });
+
+    if (!filePath) {
+      return;
+    }
+
+    const base64 = await blobToBase64(blob);
+    ExportFile(filePath, base64);
   };
 
   return (

@@ -8,12 +8,13 @@ import (
 )
 
 type WorkoutService struct {}
-
 type JSONItem struct {
     Filename string `json:"filename"`
     LastModified string `json:"lastModified"`
     Content  string `json:"content"`
 }
+
+func (j *WorkoutService) ExportFile(path string, data []byte) (error) { return os.WriteFile(path + ".pdf", data, 0644) }
 
 func (j *WorkoutService) SaveWorkout(data string, name string) (string, error) {
     homeDir, err := os.UserHomeDir()
