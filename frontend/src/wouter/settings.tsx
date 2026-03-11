@@ -24,8 +24,8 @@ const dummyData: FormData = {
     {
       name: "Day 1",
       inputs: [
-        { exercise: "Push-ups", repetitions: 10, sets: 3 },
-        { exercise: "Squats", repetitions: 15, sets: 4 },
+        { exercise: "Push-ups", repetitions: 10 },
+        { exercise: "Squats", repetitions: 15 },
       ],
     },
   ],

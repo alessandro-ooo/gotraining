@@ -29,7 +29,6 @@ export type FormData = {
     inputs: {
       exercise: string;
       repetitions: number;
-      sets: number;
     }[];
   }[];
 };
