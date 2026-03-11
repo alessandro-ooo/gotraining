@@ -45,7 +45,6 @@ type FormData = {
     inputs: {
       exercise: string;
       repetitions: number;
-      sets: number;
     }[];
   }[];
 };
@@ -72,16 +71,17 @@ function Day({ dayIndex, control, register, onRemove }: DayProps) {
   return (
     <div className="flex flex-col gap-5 bg-zinc-800 p-4 rounded-lg">
       <div className="flex flex-row gap-2 rounded-lg pb-2">
-        <GTButton variant="discard" onClick={onRemove}>
-          <p>{t("editor.day.remove")}</p>
-        </GTButton>
+        {dayIndex > 0 && (
+          <GTButton variant="discard" onClick={onRemove}>
+            <p>{t("editor.day.remove")}</p>
+          </GTButton>
+        )}
         <GTButton
           variant="secondary"
           onClick={() =>
             appendInput({
               exercise: "",
               repetitions: 0,
-              sets: 0,
             })
           }
         >
@@ -105,10 +105,6 @@ function Day({ dayIndex, control, register, onRemove }: DayProps) {
             <TextInput
               placeholder={t("editor.exercise.repetitions")}
               {...register(`days.${dayIndex}.inputs.${inputIndex}.repetitions`)}
-            />
-            <TextInput
-              placeholder={t("editor.exercise.sets")}
-              {...register(`days.${dayIndex}.inputs.${inputIndex}.sets`)}
             />
             <GTButton variant="discard" onClick={() => removeInput(inputIndex)}>
               <p>{t("editor.exercise.removeExercise")}</p>
@@ -212,7 +208,7 @@ const Workout = () => {
   };
 
   return (
-    <form className="bg-zinc-900 h-screen w-full p-8">
+    <form className="bg-zinc-900 min-h-screen h-max w-full p-8">
       <div className="flex flex-col gap-4">
         <div className="flex flex-row justify-between rounded-lg">
           <div className="flex flex-row gap-2">
