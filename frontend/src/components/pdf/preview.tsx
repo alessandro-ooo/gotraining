@@ -174,9 +174,7 @@ export const GeneratedPDF = ({
                               settings.table.borderColor || "#e0e0e0",
                           },
                         ]}
-                      >
-                        {input.sets ?? ""}
-                      </Text>
+                      ></Text>
                     </View>
                   );
                 })

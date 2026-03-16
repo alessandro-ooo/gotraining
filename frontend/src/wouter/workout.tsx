@@ -1,9 +1,6 @@
 /* eslint-disable react-hooks/incompatible-library */
 
-// TODO: Little refactor, popups
-
 import { LoadPDFEditorSettings } from "../../bindings/gotraining/services/settings/pdfeditorservice";
-
 import { pdf } from "@react-pdf/renderer";
 import {
   useFieldArray,
@@ -19,18 +16,20 @@ import {
   SaveWorkout,
   ListWorkouts,
   LoadWorkout,
+  ExportFile,
 } from "../../bindings/gotraining/services/workout/workoutservice";
 
 import { useLocation } from "wouter";
-import DialogContentLoads, {
-  type SavedItems,
-} from "@/components/gotraining/dialogs/contents/load";
+import DialogContentLoads from "@/components/gotraining/dialogs/contents/load";
 import { useState } from "react";
 import DialogContentGeneric from "@/components/gotraining/dialogs/contents/generic";
 import Icon from "@/components/gotraining/icon/icon";
 import { useTranslation } from "react-i18next";
 import { GeneratedPDF } from "@/components/pdf/preview";
 import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Dialogs } from "@wailsio/runtime";
+import { blobToBase64 } from "@/lib/utils";
 
 const DIALOG_ID = {
   NO_DIALOG: "",
@@ -46,7 +45,6 @@ type FormData = {
     inputs: {
       exercise: string;
       repetitions: number;
-      sets: number;
     }[];
   }[];
 };
@@ -73,16 +71,17 @@ function Day({ dayIndex, control, register, onRemove }: DayProps) {
   return (
     <div className="flex flex-col gap-5 bg-zinc-800 p-4 rounded-lg">
       <div className="flex flex-row gap-2 rounded-lg pb-2">
-        <GTButton variant="discard" onClick={onRemove}>
-          <p>{t("editor.day.remove")}</p>
-        </GTButton>
+        {dayIndex > 0 && (
+          <GTButton variant="discard" onClick={onRemove}>
+            <p>{t("editor.day.remove")}</p>
+          </GTButton>
+        )}
         <GTButton
           variant="secondary"
           onClick={() =>
             appendInput({
               exercise: "",
               repetitions: 0,
-              sets: 0,
             })
           }
         >
@@ -107,10 +106,6 @@ function Day({ dayIndex, control, register, onRemove }: DayProps) {
               placeholder={t("editor.exercise.repetitions")}
               {...register(`days.${dayIndex}.inputs.${inputIndex}.repetitions`)}
             />
-            <TextInput
-              placeholder={t("editor.exercise.sets")}
-              {...register(`days.${dayIndex}.inputs.${inputIndex}.sets`)}
-            />
             <GTButton variant="discard" onClick={() => removeInput(inputIndex)}>
               <p>{t("editor.exercise.removeExercise")}</p>
             </GTButton>
@@ -125,11 +120,43 @@ const Workout = () => {
   const [, navigate] = useLocation();
   const { t } = useTranslation();
 
+  const queryClient = useQueryClient();
+
+  const { data } = useQuery({
+    queryKey: ["workouts"],
+    queryFn: async () => {
+      const workouts = await ListWorkouts();
+
+      return workouts.map((w) => ({
+        name: w.filename,
+        lastModified: w.lastModified,
+      }));
+    },
+  });
+
+  const { mutate: mutateWorkouts } = useMutation(
+    {
+      mutationFn: async () => {
+        const formData = getValues();
+        await SaveWorkout(JSON.stringify(formData), formData.name);
+      },
+
+      onSuccess: () => {
+        queryClient.invalidateQueries();
+        toast.success(t("toasts.workoutSaved"));
+      },
+
+      onError: () => {
+        toast.error(t("toasts.workoutSaveError"));
+      },
+    },
+    queryClient,
+  );
+
   type DIALOG_ID = (typeof DIALOG_ID)[keyof typeof DIALOG_ID];
   const [dialogID, setDialogID] = useState<DIALOG_ID>("NO_DIALOG");
 
   const [isFileSelected, setIsFileSelected] = useState<number>();
-  const [loadedFiles, setLoadedFiles] = useState<SavedItems[]>([]);
 
   const {
     control,
@@ -163,24 +190,25 @@ const Workout = () => {
     const blob = await pdf(
       <GeneratedPDF data={data} settings={JSON.parse(PDFSettings)} />,
     ).toBlob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "training-plan.pdf";
-    a.click();
-    URL.revokeObjectURL(url);
-  };
 
-  const loadFiles = async () => {
-    const workouts = await ListWorkouts();
-    return workouts.map((w) => ({
-      name: w.filename,
-      lastModified: "24 Gen 2024", // TODO: get real last modified date, currently not supported by backend
-    }));
+    await blob.arrayBuffer();
+
+    const filePath = await Dialogs.SaveFile({
+      AllowsOtherFiletypes: false,
+      Filename: data.name,
+      HideExtension: true,
+    });
+
+    if (!filePath) {
+      return;
+    }
+
+    const base64 = await blobToBase64(blob);
+    ExportFile(filePath, base64);
   };
 
   return (
-    <form className="bg-zinc-900 h-screen w-full p-8">
+    <form className="bg-zinc-900 min-h-screen h-max w-full p-8">
       <div className="flex flex-col gap-4">
         <div className="flex flex-row justify-between rounded-lg">
           <div className="flex flex-row gap-2">
@@ -216,7 +244,7 @@ const Workout = () => {
                   return;
                 }
 
-                await SaveWorkout(JSON.stringify(formData), formData.name);
+                await mutateWorkouts();
               }}
             >
               <p>{t("editor.saveWorkout")}</p>
@@ -237,9 +265,6 @@ const Workout = () => {
                   setDialogID("unsaved");
                   return;
                 }
-
-                const items = await loadFiles();
-                setLoadedFiles(items);
                 setDialogID("load");
               }}
             >
@@ -275,12 +300,14 @@ const Workout = () => {
         show={dialogID === "load"}
         onCancelClick={() => setDialogID("")}
         onLoadClick={async () => {
-          const loadedWorkout = await LoadWorkout(
-            loadedFiles[isFileSelected!].name,
-          );
+          if (!data) {
+            return;
+          }
+
+          const loadedWorkout = await LoadWorkout(data[isFileSelected!].name);
 
           reset(JSON.parse(loadedWorkout));
-          setValue("name", loadedFiles[isFileSelected!].name, {
+          setValue("name", data[isFileSelected!].name, {
             shouldDirty: true,
           });
 
@@ -289,7 +316,7 @@ const Workout = () => {
         }}
         onItemClick={setIsFileSelected}
         selectedItemIndex={isFileSelected}
-        items={loadedFiles}
+        items={data || []}
       />
 
       <DialogContentGeneric
@@ -312,17 +339,12 @@ const Workout = () => {
         }
         onConfirm={async () => {
           if (dialogID === "unsaved") {
-            const items = await loadFiles();
-            setLoadedFiles(items);
             setDialogID("load");
             return;
           }
 
           if (dialogID === "overwrite") {
-            const formData = getValues();
-            await SaveWorkout(JSON.stringify(formData), formData.name);
-
-            toast.success(t("toasts.workoutSaved"));
+            mutateWorkouts();
             setDialogID("");
             return;
           }
