@@ -39,7 +39,7 @@ func main() {
 	// 'Mac' options tailor the application when running an macOS.
 	app := application.New(application.Options{
 		Name:        "gotraining",
-		Description: "A demo of using raw HTML & CSS",
+		Description: "Build workout plans with just a few clicks!",
 		Services: []application.Service{
 			application.NewService(&workout.WorkoutService{}),
 			application.NewService(&pdfeditor.PDFEditorService{}),
@@ -58,7 +58,7 @@ func main() {
 	// 'BackgroundColour' is the background colour of the window.
 	// 'URL' is the URL that will be loaded into the webview.
 	app.Window.NewWithOptions(application.WebviewWindowOptions{
-		Title: "Window 1",
+		Title: "gotraining",
 		Mac: application.MacWindow{
 			InvisibleTitleBarHeight: 50,
 			Backdrop:                application.MacBackdropTranslucent,
@@ -66,6 +66,10 @@ func main() {
 		},
 		BackgroundColour: application.NewRGB(27, 38, 54),
 		URL:              "/",
+		Width: 1280, // gotta set it to something otherwise it spawns at 800x600 and resizes itself if u click the border
+		Height: 720, // gotta set it to something otherwise it spawns at 800x600 and resizes itself if u click the border
+		MinWidth: 1280,
+		MinHeight: 720,
 	})
 
 	// Create a goroutine that emits an event containing the current time every second.
