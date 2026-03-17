@@ -18,6 +18,7 @@ export type GeneralSettingsForm = {
   header: HeaderSettings;
   table: TableSettings;
   theme: string;
+  compact: boolean;
 };
 
 export type SettingsForm = GeneralSettingsForm;
