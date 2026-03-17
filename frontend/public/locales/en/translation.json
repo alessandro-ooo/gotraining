@@ -58,6 +58,7 @@
       "theme": "Theme"
     },
     "pdfEditor": {
+      "compact": "Compact mode",
       "headerTitle": "Header",
       "cellTitle": "Cell",
       "table": {
