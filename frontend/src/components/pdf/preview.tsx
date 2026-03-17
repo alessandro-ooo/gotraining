@@ -2,11 +2,11 @@ import {
   Document,
   Page,
   PDFViewer,
-  Text,
-  View,
+  // View,
   StyleSheet,
 } from "@react-pdf/renderer";
 import type { SettingsForm, FormData } from "./types";
+import pageContent from "./pageContent";
 
 export const GeneratedPDF = ({
   data,
@@ -73,130 +73,37 @@ export const GeneratedPDF = ({
     },
   });
 
+  // these two values will help the pdf to be generated in case it's too small.
+  // if it's too small, the pdf won't be generated, it's a limitation of the library.
+  const COMPACT_PAGE_HEIGHT = 120;
+  const COMPACT_ROW_HEIGHT = 30;
+
   return (
     <Document>
       {data.days.map((day, index) => (
-        <Page size="A4" style={styles.page} key={index}>
-          <View style={styles.section}>
-            <Text style={styles.dayTitle}>{day?.name || "Day 1"}</Text>
-            <View style={styles.table}>
-              <View
-                style={[
-                  styles.tableRow,
-                  styles.tableHeader,
-                  {
-                    borderTopLeftRadius:
-                      parseInt(settings.table.borderRadius) || 0,
-                    borderTopRightRadius:
-                      parseInt(settings.table.borderRadius) || 0,
-                  },
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.tableCell,
-                    styles.colExercise,
-                    styles.headerText,
-                  ]}
-                >
-                  Exercise
-                </Text>
-                <Text
-                  style={[styles.tableCell, styles.colReps, styles.headerText]}
-                >
-                  Reps
-                </Text>
-                <Text
-                  style={[styles.tableCell, styles.colSets, styles.headerText]}
-                >
-                  Sets
-                </Text>
-              </View>
-
-              {day?.inputs && day.inputs.length > 0 ? (
-                day.inputs.map((input, i) => {
-                  const isLastRow = i === day.inputs.length - 1;
-                  return (
-                    <View
-                      style={[
-                        styles.tableRow,
-                        {
-                          borderBottomLeftRadius: isLastRow
-                            ? parseInt(settings.table.borderRadius) || 0
-                            : 0,
-                          borderBottomRightRadius: isLastRow
-                            ? parseInt(settings.table.borderRadius) || 0
-                            : 0,
-                        },
-                      ]}
-                      key={i}
-                    >
-                      <Text
-                        style={[
-                          styles.tableCell,
-                          styles.colExercise,
-                          styles.exerciseText,
-                          {
-                            borderBottomWidth: isLastRow ? 0 : 1,
-                            borderBottomColor:
-                              settings.table.borderColor || "#e0e0e0",
-                            borderRightWidth: 1,
-                            borderRightColor:
-                              settings.table.borderColor || "#e0e0e0",
-                          },
-                        ]}
-                      >
-                        {input.exercise || ""}
-                      </Text>
-                      <Text
-                        style={[
-                          styles.tableCell,
-                          styles.colReps,
-                          {
-                            borderBottomWidth: isLastRow ? 0 : 1,
-                            borderBottomColor:
-                              settings.table.borderColor || "#e0e0e0",
-                            borderRightWidth: 1,
-                            borderRightColor:
-                              settings.table.borderColor || "#e0e0e0",
-                          },
-                        ]}
-                      >
-                        {input.repetitions ?? ""}
-                      </Text>
-                      <Text
-                        style={[
-                          styles.tableCell,
-                          styles.colSets,
-                          {
-                            borderBottomWidth: isLastRow ? 0 : 1,
-                            borderBottomColor:
-                              settings.table.borderColor || "#e0e0e0",
-                          },
-                        ]}
-                      ></Text>
-                    </View>
-                  );
-                })
-              ) : (
-                <View style={styles.tableRow}>
-                  <Text style={[styles.noExercises, { width: "100%" }]}>
-                    No exercises
-                  </Text>
-                </View>
-              )}
-            </View>
-          </View>
+        <Page
+          size={
+            settings.compact
+              ? [
+                  595.28, // A4
+                  COMPACT_PAGE_HEIGHT + day.inputs.length * COMPACT_ROW_HEIGHT,
+                ]
+              : "A4"
+          }
+          style={styles.page}
+          key={index}
+        >
+          {pageContent({ day, settings })}
         </Page>
       ))}
     </Document>
   );
 };
 
-interface PDFPreviewProps {
+type PDFPreviewProps = {
   data: FormData;
   settings: SettingsForm;
-}
+};
 
 const PDFPreview = ({ data, settings }: PDFPreviewProps) => {
   return (
