@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button as ShadCNButton } from "@/components/ui/button";
 import type React from "react";
 
 type ButtonProps = {
@@ -9,7 +9,7 @@ type ButtonProps = {
   children?: React.ReactNode;
 };
 
-const GTButton = ({
+const Button = ({
   type = "button",
   disabled,
   variant,
@@ -17,7 +17,7 @@ const GTButton = ({
   children,
 }: ButtonProps) => {
   return (
-    <Button
+    <ShadCNButton
       type={type}
       variant={variant}
       className="flex flex-row gap-2"
@@ -25,8 +25,8 @@ const GTButton = ({
       disabled={disabled}
     >
       {children}
-    </Button>
+    </ShadCNButton>
   );
 };
 
-export default GTButton;
+export default Button;

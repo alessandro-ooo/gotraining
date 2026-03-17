@@ -9,7 +9,7 @@ import {
   type UseFormRegister,
 } from "react-hook-form";
 
-import GTButton from "../components/gotraining/buttons/button";
+import Button from "../components/gotraining/buttons/button";
 import TextInput from "../components/gotraining/inputs/TextInput";
 
 import {
@@ -72,11 +72,11 @@ function Day({ dayIndex, control, register, onRemove }: DayProps) {
     <div className="flex flex-col gap-5 bg-zinc-800 p-4 rounded-lg">
       <div className="flex flex-row gap-2 rounded-lg pb-2">
         {dayIndex > 0 && (
-          <GTButton variant="discard" onClick={onRemove}>
+          <Button variant="discard" onClick={onRemove}>
             <p>{t("editor.day.remove")}</p>
-          </GTButton>
+          </Button>
         )}
-        <GTButton
+        <Button
           variant="secondary"
           onClick={() =>
             appendInput({
@@ -86,7 +86,7 @@ function Day({ dayIndex, control, register, onRemove }: DayProps) {
           }
         >
           <p>{t("editor.exercise.add")}</p>
-        </GTButton>
+        </Button>
       </div>
 
       <TextInput
@@ -106,9 +106,9 @@ function Day({ dayIndex, control, register, onRemove }: DayProps) {
               placeholder={t("editor.exercise.repetitions")}
               {...register(`days.${dayIndex}.inputs.${inputIndex}.repetitions`)}
             />
-            <GTButton variant="discard" onClick={() => removeInput(inputIndex)}>
+            <Button variant="discard" onClick={() => removeInput(inputIndex)}>
               <p>{t("editor.exercise.removeExercise")}</p>
-            </GTButton>
+            </Button>
           </div>
         ))}
       </div>
@@ -212,22 +212,22 @@ const Workout = () => {
       <div className="flex flex-col gap-4">
         <div className="flex flex-row justify-between rounded-lg">
           <div className="flex flex-row gap-2">
-            <GTButton
+            <Button
               variant="secondary"
               onClick={() => appendDay({ name: "", inputs: [] })}
             >
               <p>{t("editor.day.add")}</p>
-            </GTButton>
+            </Button>
 
-            <GTButton
+            <Button
               variant="tertiary"
               onClick={async () => {
                 downloadPDF();
               }}
             >
               <p>{t("editor.exportPDF")}</p>
-            </GTButton>
-            <GTButton
+            </Button>
+            <Button
               variant="tertiary"
               type="button"
               onClick={async () => {
@@ -248,17 +248,17 @@ const Workout = () => {
               }}
             >
               <p>{t("editor.saveWorkout")}</p>
-            </GTButton>
+            </Button>
           </div>
 
           <div className="flex flex-row gap-2">
-            <GTButton variant="default" onClick={() => navigate("/settings")}>
-              <div className="flex flex-row gap-2">
+            <Button variant="default" onClick={() => navigate("/settings")}>
+              <div className="flex flex-row gap-2 items-center">
                 <p>{t("editor.settings")}</p>
                 <Icon name="settings" color="#FFFFFF" />
               </div>
-            </GTButton>
-            <GTButton
+            </Button>
+            <Button
               variant="default"
               onClick={async () => {
                 if (isDirty) {
@@ -268,11 +268,11 @@ const Workout = () => {
                 setDialogID("load");
               }}
             >
-              <div className="flex flex-row gap-2">
+              <div className="flex flex-row gap-2 items-center">
                 <p>{t("editor.loadWorkout")}</p>
                 <Icon name="load" color="#FFFFFF" />
               </div>
-            </GTButton>
+            </Button>
           </div>
         </div>
 
