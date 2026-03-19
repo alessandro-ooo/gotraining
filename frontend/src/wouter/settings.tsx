@@ -6,7 +6,9 @@ import { useTranslation } from "react-i18next";
 import PDFPreview from "@/components/pdf/preview";
 
 import {
+  DeleteLogo,
   LoadPDFEditorSettings,
+  SaveLogo,
   SavePDFEditorSettings,
 } from "../../bindings/gotraining/services/settings/pdfeditorservice";
 import type { SettingsForm, FormData } from "@/components/pdf/types";
@@ -15,9 +17,11 @@ import Button from "@/components/gotraining/buttons/button";
 import Icon from "@/components/gotraining/icon/icon";
 import { navigate } from "wouter/use-browser-location";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
+import { blobToBase64, getLogo } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
 
 const dummyData: FormData = {
   name: "Sample Workout",
@@ -50,17 +54,22 @@ const dummyData: FormData = {
 
 const Settings = () => {
   const { t } = useTranslation();
+  const [logoPreview, setLogoPreview] = useState<Blob>();
 
   const { data, isFetched } = useQuery({
     queryKey: ["pdfEditorSettings"],
     queryFn: async () => {
       const settings = await LoadPDFEditorSettings();
       const parsed: SettingsForm = JSON.parse(settings);
+
+      const logo = await getLogo();
+
       return {
         header: parsed.header,
         table: parsed.table,
         theme: parsed.theme,
         compact: parsed.compact,
+        logo: logo,
       };
     },
   });
@@ -86,6 +95,8 @@ const Settings = () => {
   }
 
   console.log(watch());
+
+  const isThereLogo = (data && data.logo.length) || !!logoPreview;
 
   return (
     <form className="bg-zinc-900 h-max w-full p-8">
@@ -142,6 +153,36 @@ const Settings = () => {
           <div className="flex flex-row gap-6">
             <div className="flex flex-col gap-4 bg-zinc-800 p-6 rounded-lg w-full max-w-xl">
               <h3 className="text-lg font-semibold text-white mt-4">Layout</h3>
+
+              <div className="flex flex-row gap-2 items-center">
+                <div className="w-64">
+                  {" "}
+                  <Input
+                    type="file"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      setLogoPreview(file);
+
+                      const url = URL.createObjectURL(file);
+                      setValue("logo", url, { shouldDirty: true });
+                    }}
+                  />
+                </div>
+
+                {isThereLogo && (
+                  <Button
+                    variant="tertiary"
+                    onClick={() => {
+                      DeleteLogo();
+                      setLogoPreview(undefined);
+                      setValue("logo", "", { shouldDirty: true });
+                    }}
+                  >
+                    Clear
+                  </Button>
+                )}
+              </div>
 
               <div className="flex flex-row gap-2 items-center">
                 <Checkbox
@@ -275,7 +316,10 @@ const Settings = () => {
                 <Button
                   disabled={!isDirty}
                   variant="secondary"
-                  onClick={() => {
+                  onClick={async () => {
+                    const base64 = await blobToBase64(logoPreview!);
+                    await SaveLogo(base64);
+
                     SavePDFEditorSettings(JSON.stringify(watch()));
                     toast.success(t("toasts.savedMessage"));
                   }}
@@ -296,7 +340,7 @@ const Settings = () => {
             {isFetched && !!data && (
               <PDFPreview
                 data={dummyData}
-                settings={watch()}
+                settings={{ ...watch(), logo: getValues("logo") }}
                 key={JSON.stringify(watch())}
               />
             )}

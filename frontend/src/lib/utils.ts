@@ -19,3 +19,9 @@ export async function blobToBase64(blob: Blob): Promise<string> {
     reader.readAsDataURL(blob);
   });
 }
+
+export const getLogo = async () => {
+  const url = "/images/logo.png";
+  const res = await fetch(url, { method: "HEAD" });
+  return res.ok ? url : "";
+};

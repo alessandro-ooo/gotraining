@@ -5,8 +5,16 @@
 // @ts-ignore: Unused imports
 import { Call as $Call, CancellablePromise as $CancellablePromise, Create as $Create } from "@wailsio/runtime";
 
+export function DeleteLogo(): $CancellablePromise<void> {
+    return $Call.ByID(903441404);
+}
+
 export function LoadPDFEditorSettings(): $CancellablePromise<string> {
     return $Call.ByID(4103014046);
+}
+
+export function SaveLogo(image: string): $CancellablePromise<string> {
+    return $Call.ByID(1307097906, image);
 }
 
 export function SavePDFEditorSettings(data: string): $CancellablePromise<string> {
