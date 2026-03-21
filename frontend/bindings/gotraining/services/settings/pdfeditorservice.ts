@@ -9,6 +9,10 @@ export function DeleteLogo(): $CancellablePromise<void> {
     return $Call.ByID(903441404);
 }
 
+export function IsFirstStart(): $CancellablePromise<boolean> {
+    return $Call.ByID(870824710);
+}
+
 export function LoadPDFEditorSettings(): $CancellablePromise<string> {
     return $Call.ByID(4103014046);
 }
