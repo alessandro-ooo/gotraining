@@ -39,6 +39,27 @@ type JSONPDFEditor struct {
 
 const defaultPDFEditorSettings = `{"header":{"textColor":"#211c1c","backgroundColor":"#ababab","bold":false,"fontSize":"13"},"table":{"borderColor":"#fafafa","exerciseBackgroundColor":"#dedede","cellColor":"#000000","exerciseBold":false,"cellFontSize":"12"}, "compact":false, "logo":""}`
 
+func (p *PDFEditorService) IsFirstStart() (bool) {
+    // for now, I don't know how I could find if it's a first start of the app, 
+    // so I'll confirm thru the existence of the pdfeditor.json
+
+	homeDir, err := os.UserHomeDir()
+    if err != nil {
+        return true;
+    }
+    dir := filepath.Join(homeDir, "Documents", "plans", "settings")
+    filename := filepath.Join(dir, "pdfeditor.json")
+
+    _, fileErr := os.ReadFile(filename)
+
+    if fileErr != nil {
+        return true
+    }
+
+    return false;
+
+}
+
 func (p *PDFEditorService) SavePDFEditorSettings(data string) (string, error) {
     homeDir, err := os.UserHomeDir()
     if err != nil {
