@@ -45,9 +45,10 @@
         "fileName": "Nome",
         "lastModified": "Ultimo aggiornamento"
       },
+      "nodata": "Nessun file trovato.",
       "inputs": {
         "confirm": "Carica",
-        "discard": "Scarta"
+        "discard": "Annulla"
       }
     }
   },
@@ -58,6 +59,10 @@
       "theme": "Tema"
     },
     "pdfEditor": {
+      "logo": {
+        "upload": "Carica logo",
+        "remove": "Rimuovi logo"
+      },
       "compact": "Modalità compatta",
       "headerTitle": "Intestazione",
       "cellTitle": "Cella",

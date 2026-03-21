@@ -17,7 +17,7 @@ import Button from "@/components/gotraining/buttons/button";
 import Icon from "@/components/gotraining/icon/icon";
 import { navigate } from "wouter/use-browser-location";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 import { blobToBase64, getLogo } from "@/lib/utils";
@@ -85,6 +85,7 @@ const Settings = () => {
     defaultValues: data,
   });
 
+  const fileRef = useRef<HTMLInputElement>(null);
   // this will reset the form with the laoded settings.
   useEffect(() => {
     reset(data);
@@ -94,9 +95,8 @@ const Settings = () => {
     return <div>Loading...</div>;
   }
 
-  console.log(watch());
-
-  const isThereLogo = (data && data.logo.length) || !!logoPreview;
+  const isThereLogo =
+    (data && !!getValues("logo") && getValues("logo").length) || !!logoPreview;
 
   return (
     <form className="bg-zinc-900 h-max w-full p-8">
@@ -155,21 +155,25 @@ const Settings = () => {
               <h3 className="text-lg font-semibold text-white mt-4">Layout</h3>
 
               <div className="flex flex-row gap-2 items-center">
-                <div className="w-64">
-                  {" "}
-                  <Input
-                    type="file"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-                      setLogoPreview(file);
+                <Input
+                  className="hidden"
+                  ref={fileRef}
+                  type="file"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setLogoPreview(file);
 
-                      const url = URL.createObjectURL(file);
-                      setValue("logo", url, { shouldDirty: true });
-                    }}
-                  />
-                </div>
-
+                    const url = URL.createObjectURL(file);
+                    setValue("logo", url, { shouldDirty: true });
+                  }}
+                />
+                <Button
+                  variant="default"
+                  onClick={() => fileRef.current?.click()}
+                >
+                  {t("settings.pdfEditor.logo.upload")}
+                </Button>
                 {isThereLogo && (
                   <Button
                     variant="tertiary"
@@ -179,7 +183,7 @@ const Settings = () => {
                       setValue("logo", "", { shouldDirty: true });
                     }}
                   >
-                    Clear
+                    {t("settings.pdfEditor.logo.remove")}
                   </Button>
                 )}
               </div>

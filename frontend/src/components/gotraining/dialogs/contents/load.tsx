@@ -164,7 +164,7 @@ const DialogContentLoads = ({
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No Loads found.
+                    {t("dialogs.load.nodata")}
                   </TableCell>
                 </TableRow>
               )}
