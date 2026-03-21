@@ -60,7 +60,6 @@ func main() {
             fileName := strings.TrimPrefix(r.URL.Path, "/images/")
             fullPath := filepath.Join(basePath, fileName)
 
-            // 🔒 सुरक्षा: prevent path traversal
             if !strings.HasPrefix(fullPath, basePath) {
                 http.Error(w, "Forbidden", http.StatusForbidden)
                 return
