@@ -2,7 +2,7 @@ import {
   Document,
   Page,
   PDFViewer,
-  // View,
+  Image,
   StyleSheet,
 } from "@react-pdf/renderer";
 import type { SettingsForm, FormData } from "./types";
@@ -80,6 +80,11 @@ export const GeneratedPDF = ({
 
   return (
     <Document>
+      {settings.logo.length > 0 && (
+        <Page>
+          <Image src={settings.logo} />
+        </Page>
+      )}
       {data.days.map((day, index) => (
         <Page
           size={

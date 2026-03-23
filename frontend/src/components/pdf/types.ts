@@ -19,6 +19,7 @@ export type GeneralSettingsForm = {
   table: TableSettings;
   theme: string;
   compact: boolean;
+  logo: string;
 };
 
 export type SettingsForm = GeneralSettingsForm;

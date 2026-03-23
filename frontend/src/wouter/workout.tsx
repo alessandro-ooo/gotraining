@@ -29,7 +29,7 @@ import { GeneratedPDF } from "@/components/pdf/preview";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Dialogs } from "@wailsio/runtime";
-import { blobToBase64 } from "@/lib/utils";
+import { blobToBase64, getLogo } from "@/lib/utils";
 
 const DIALOG_ID = {
   NO_DIALOG: "",
@@ -134,6 +134,14 @@ const Workout = () => {
     },
   });
 
+  const { data: logoData } = useQuery({
+    queryKey: ["pdfLogo"],
+    queryFn: async () => {
+      const logo = await getLogo();
+      return logo;
+    },
+  });
+
   const { mutate: mutateWorkouts } = useMutation(
     {
       mutationFn: async () => {
@@ -188,7 +196,10 @@ const Workout = () => {
     const data = getValues();
 
     const blob = await pdf(
-      <GeneratedPDF data={data} settings={JSON.parse(PDFSettings)} />,
+      <GeneratedPDF
+        data={data}
+        settings={{ ...JSON.parse(PDFSettings), logo: logoData }}
+      />,
     ).toBlob();
 
     await blob.arrayBuffer();

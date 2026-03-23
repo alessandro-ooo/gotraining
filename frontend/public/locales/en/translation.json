@@ -45,6 +45,7 @@
         "fileName": "Name",
         "lastModified": "Last modified"
       },
+      "nodata": "No data found.",
       "inputs": {
         "confirm": "Load",
         "discard": "Discard"
@@ -58,6 +59,10 @@
       "theme": "Theme"
     },
     "pdfEditor": {
+      "logo": {
+        "upload": "Upload logo",
+        "remove": "Remove logo"
+      },
       "compact": "Compact mode",
       "headerTitle": "Header",
       "cellTitle": "Cell",

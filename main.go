@@ -4,6 +4,10 @@ import (
 	"embed"
 	_ "embed"
 	"log"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
@@ -44,13 +48,36 @@ func main() {
 			application.NewService(&workout.WorkoutService{}),
 			application.NewService(&pdfeditor.PDFEditorService{}),
 		},
+		
 		Assets: application.AssetOptions{
-			Handler: application.AssetFileServerFS(assets),
-		},
+    	Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+        if strings.HasPrefix(r.URL.Path, "/images/") {
+
+            homeDir, _ := os.UserHomeDir()
+            basePath := filepath.Join(homeDir, "Documents", "plans", "settings")
+
+            fileName := strings.TrimPrefix(r.URL.Path, "/images/")
+            fullPath := filepath.Join(basePath, fileName)
+
+            if !strings.HasPrefix(fullPath, basePath) {
+                http.Error(w, "Forbidden", http.StatusForbidden)
+                return
+            }
+
+            http.ServeFile(w, r, fullPath)
+            return
+        }
+
+        // fallback to embedded assets
+        application.AssetFileServerFS(assets).ServeHTTP(w, r)
+    }),
+},
 		Mac: application.MacOptions{
 			ApplicationShouldTerminateAfterLastWindowClosed: true,
 		},
 	})
+
 
 	// Create a new window with the necessary options.
 	// 'Title' is the title of the window.
@@ -71,7 +98,7 @@ func main() {
 		MinWidth: 1280,
 		MinHeight: 720,
 	})
-
+	
 	// Create a goroutine that emits an event containing the current time every second.
 	// The frontend can listen to this event and update the UI accordingly.
 	go func() {

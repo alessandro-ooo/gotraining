@@ -34,11 +34,42 @@ type JSONPDFEditor struct {
 	Header          Header `json:"header"`
 	Table           Table   `json:"table"`
     Compact         bool `json:"compact"`
+    Logo            string `json:"logo"`
 }
 
-const defaultPDFEditorSettings = `{"header":{"textColor":"#211c1c","backgroundColor":"#ababab","bold":false,"fontSize":"13"},"table":{"borderColor":"#fafafa","exerciseBackgroundColor":"#dedede","cellColor":"#000000","exerciseBold":false,"cellFontSize":"12"}, "compact":false}`
+const defaultPDFEditorSettings = `{"header":{"textColor":"#211c1c","backgroundColor":"#ababab","bold":false,"fontSize":"13"},"table":{"borderColor":"#fafafa","exerciseBackgroundColor":"#dedede","cellColor":"#000000","exerciseBold":false,"cellFontSize":"12"}, "compact":false, "logo":""}`
+
+func (p *PDFEditorService) IsFirstStart() (bool) {
+    // for now, I don't know how I could find if it's a first start of the app, 
+    // so I'll confirm thru the existence of the pdfeditor.json
+
+	homeDir, err := os.UserHomeDir()
+    if err != nil {
+        return true;
+    }
+    dir := filepath.Join(homeDir, "Documents", "plans", "settings")
+    filename := filepath.Join(dir, "pdfeditor.json")
+
+    _, fileErr := os.ReadFile(filename)
+
+    if fileErr != nil {
+        return true
+    }
+
+    return false;
+
+}
 
 func (p *PDFEditorService) SavePDFEditorSettings(data string) (string, error) {
+
+    // this will make sure to fill the json because the frontend passes an empty string in App.tsx
+    json := func() string {
+        if len(data) == 0 {
+            return defaultPDFEditorSettings
+        }
+        return data
+    }()
+
     homeDir, err := os.UserHomeDir()
     if err != nil {
         return "", err
@@ -48,7 +79,7 @@ func (p *PDFEditorService) SavePDFEditorSettings(data string) (string, error) {
         return "", err
     }
     filename := filepath.Join(dir, "pdfeditor.json");
-    err = os.WriteFile(filename, []byte(data), 0644)
+    err = os.WriteFile(filename, []byte(json), 0644)
 
     if err != nil {
         return "", err
@@ -71,4 +102,26 @@ func (p *PDFEditorService) LoadPDFEditorSettings() (string, error) {
         return defaultPDFEditorSettings, nil
     }
     return string(data), nil
+}
+
+func(j *PDFEditorService) SaveLogo(image []byte) (string) {
+    homeDir, err := os.UserHomeDir()
+
+    if err == nil {
+        dir := filepath.Join(homeDir, "Documents", "plans", "settings");
+
+        os.WriteFile(dir + "/logo.png", image, 0644);
+        return dir + "/logo.png";
+    }
+
+    return ""
+}
+
+func (j *PDFEditorService) DeleteLogo() {
+    homeDir, err := os.UserHomeDir();
+
+    if err == nil {
+        dir := filepath.Join(homeDir, "Documents", "plans", "settings");
+        os.Remove(dir + "/logo.png")
+    }
 }
