@@ -61,6 +61,15 @@ func (p *PDFEditorService) IsFirstStart() (bool) {
 }
 
 func (p *PDFEditorService) SavePDFEditorSettings(data string) (string, error) {
+
+    // this will make sure to fill the json because the frontend passes an empty string in App.tsx
+    json := func() string {
+        if len(data) == 0 {
+            return defaultPDFEditorSettings
+        }
+        return data
+    }()
+
     homeDir, err := os.UserHomeDir()
     if err != nil {
         return "", err
@@ -70,7 +79,7 @@ func (p *PDFEditorService) SavePDFEditorSettings(data string) (string, error) {
         return "", err
     }
     filename := filepath.Join(dir, "pdfeditor.json");
-    err = os.WriteFile(filename, []byte(data), 0644)
+    err = os.WriteFile(filename, []byte(json), 0644)
 
     if err != nil {
         return "", err

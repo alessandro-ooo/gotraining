@@ -98,7 +98,7 @@ func main() {
 		MinWidth: 1280,
 		MinHeight: 720,
 	})
-
+	
 	// Create a goroutine that emits an event containing the current time every second.
 	// The frontend can listen to this event and update the UI accordingly.
 	go func() {

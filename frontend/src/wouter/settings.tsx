@@ -321,11 +321,13 @@ const Settings = () => {
                   disabled={!isDirty}
                   variant="secondary"
                   onClick={async () => {
-                    const base64 = await blobToBase64(logoPreview!);
-                    await SaveLogo(base64);
+                    if (logoPreview) {
+                      const base64 = await blobToBase64(logoPreview);
+                      await SaveLogo(base64);
+                    }
 
                     SavePDFEditorSettings(JSON.stringify(watch()));
-                    toast.success(t("toasts.savedMessage"));
+                    toast.success(t("toasts.settingsSaved"));
                   }}
                 >
                   {t("generalInputs.confirm")}
