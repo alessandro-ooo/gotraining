@@ -21,7 +21,7 @@ export async function blobToBase64(blob: Blob): Promise<string> {
 }
 
 export const getLogo = async () => {
-  const url = "/images/logo.png";
-  const res = await fetch(url, { method: "HEAD" });
+  const url = `/images/logo.png?t=${Date.now()}`;
+  const res = await fetch(url, { method: "GET" });
   return res.ok ? url : "";
 };
