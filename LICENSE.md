@@ -15,18 +15,19 @@ in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, and to permit persons to whom the Software is 
 furnished to do so, subject to the following conditions:
 
-1.  The Software itself may NOT be sold, sublicensed, redistribuited or otherwise
+
+1. The Software itself may NOT be sold, sublicensed, redistribuited or otherwise
     commercially exploited.
-2.  The Software itself may NOT be forked to be redistribuited outside the official
+2. The Software itself may NOT be forked to be redistribuited outside the official
     repository.
-3.  The generated content of the Software can be sold by the End User, but the
+3. The generated content of the Software can be sold by the End User, but the
     Software itself may NOT be used as Software As Service or as mean to monetize.
-    3.1.   For example, you may NOT wrap your app around the software to generate
-           content and then sell it in bulk, or monetize the generated content
-           with the intent of making profit on the End User.
-    3.2.   For example, you may NOT sell a course and provide the Software behind
-           a paywall, or renting the Software out.
-4.  The Software shall remain open source and free to use.
+    1. For example, you may NOT wrap your app around the software to generate
+       content and then sell it in bulk, or monetize the generated content
+       with the intent of making profit on the End User.
+    2. For example, you may NOT sell a course and provide the Software behind
+       a paywall, or renting the Software out.
+4. The Software shall remain open source and free to use.
 
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
