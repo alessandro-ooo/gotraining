@@ -159,6 +159,7 @@ const Settings = () => {
                   className="hidden"
                   ref={fileRef}
                   type="file"
+                  accept="image/png"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (!file) return;
@@ -325,8 +326,8 @@ const Settings = () => {
                       const base64 = await blobToBase64(logoPreview);
                       await SaveLogo(base64);
                     }
+                    await SavePDFEditorSettings(JSON.stringify(watch()));
 
-                    SavePDFEditorSettings(JSON.stringify(watch()));
                     toast.success(t("toasts.settingsSaved"));
                   }}
                 >

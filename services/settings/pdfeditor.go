@@ -34,10 +34,9 @@ type JSONPDFEditor struct {
 	Header          Header `json:"header"`
 	Table           Table   `json:"table"`
     Compact         bool `json:"compact"`
-    Logo            string `json:"logo"`
 }
 
-const defaultPDFEditorSettings = `{"header":{"textColor":"#211c1c","backgroundColor":"#ababab","bold":false,"fontSize":"13"},"table":{"borderColor":"#fafafa","exerciseBackgroundColor":"#dedede","cellColor":"#000000","exerciseBold":false,"cellFontSize":"12"}, "compact":false, "logo":""}`
+const defaultPDFEditorSettings = `{"header":{"textColor":"#211c1c","backgroundColor":"#ababab","bold":false,"fontSize":"13"},"table":{"borderColor":"#fafafa","exerciseBackgroundColor":"#dedede","cellColor":"#000000","exerciseBold":false,"cellFontSize":"12"}, "compact":false}`
 
 func (p *PDFEditorService) IsFirstStart() (bool) {
     // for now, I don't know how I could find if it's a first start of the app, 
