@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { SettingsForm, FormData } from "./types";
 import { Text, View, StyleSheet } from "@react-pdf/renderer";
 
@@ -6,7 +7,7 @@ type PageContentProps = {
   settings: SettingsForm;
 };
 
-const pageContent = ({ day, settings }: PageContentProps) => {
+const PageContent = ({ day, settings }: PageContentProps) => {
   const styles = StyleSheet.create({
     // some of the styles are applied directly in the component to allow dynamic values from settings
     page: {
@@ -48,14 +49,14 @@ const pageContent = ({ day, settings }: PageContentProps) => {
       fontWeight: settings.table.exerciseBold ? "bold" : "normal",
     },
     colExercise: {
-      width: "60%",
+      width: "33%",
     },
     colReps: {
-      width: "20%",
+      width: "33%",
       textAlign: "center",
     },
     colSets: {
-      width: "20%",
+      width: "33%",
       textAlign: "center",
       borderRightWidth: 0,
     },
@@ -64,6 +65,8 @@ const pageContent = ({ day, settings }: PageContentProps) => {
       color: "#666",
     },
   });
+
+  const { t } = useTranslation();
 
   return (
     <View style={styles.section}>
@@ -82,13 +85,13 @@ const pageContent = ({ day, settings }: PageContentProps) => {
           <Text
             style={[styles.tableCell, styles.colExercise, styles.headerText]}
           >
-            Exercise
+            {t("pdf.exercise")}
           </Text>
           <Text style={[styles.tableCell, styles.colReps, styles.headerText]}>
-            Reps
+            {t("pdf.reps")}
           </Text>
           <Text style={[styles.tableCell, styles.colSets, styles.headerText]}>
-            Sets
+            {t("pdf.sets")}
           </Text>
         </View>
 
@@ -157,9 +160,9 @@ const pageContent = ({ day, settings }: PageContentProps) => {
           })
         ) : (
           <View style={styles.tableRow}>
-            <Text style={[styles.noExercises, { width: "100%" }]}>
+            {/* <Text style={[styles.noExercises, { width: "100%" }]}>
               No exercises
-            </Text>
+            </Text> */}
           </View>
         )}
       </View>
@@ -167,4 +170,4 @@ const pageContent = ({ day, settings }: PageContentProps) => {
   );
 };
 
-export default pageContent;
+export default PageContent;

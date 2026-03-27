@@ -76,7 +76,7 @@ export const GeneratedPDF = ({
   // these two values will help the pdf to be generated in case it's too small.
   // if it's too small, the pdf won't be generated, it's a limitation of the library.
   const COMPACT_PAGE_HEIGHT = 120;
-  const COMPACT_ROW_HEIGHT = 30;
+  const COMPACT_ROW_HEIGHT = 40;
 
   return (
     <Document>
