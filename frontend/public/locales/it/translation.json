@@ -53,6 +53,12 @@
     }
   },
 
+  "pdf": {
+    "exercise": "Esercizio",
+    "reps": "Ripetizioni",
+    "sets": "Serie"
+  },
+
   "settings": {
     "interface": {
       "lang": "Lingua",

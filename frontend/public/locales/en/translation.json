@@ -53,6 +53,12 @@
     }
   },
 
+  "pdf": {
+    "exercise": "Exercise",
+    "reps": "Reps",
+    "sets": "Sets"
+  },
+
   "settings": {
     "interface": {
       "lang": "Language",
