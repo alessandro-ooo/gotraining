@@ -1,17 +1,134 @@
+/* eslint-disable react-hooks/incompatible-library */
+import i18n from "@/i18n";
 import SelectInput from "@/components/gotraining/inputs/SelectInput";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import PDFPreview from "@/components/pdf/preview";
+
+import {
+  DeleteLogo,
+  LoadPDFEditorSettings,
+  SaveLogo,
+  SavePDFEditorSettings,
+} from "../../bindings/gotraining/services/settings/pdfeditorservice";
+import type { SettingsForm, FormData } from "@/components/pdf/types";
+import Slider from "@/components/gotraining/inputs/Slider";
+import Button from "@/components/gotraining/buttons/button";
+import Icon from "@/components/gotraining/icon/icon";
+import { navigate } from "wouter/use-browser-location";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
+import { Checkbox } from "@/components/ui/checkbox";
+import { blobToBase64, getLogo } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+
+const dummyData: FormData = {
+  name: "Sample Workout",
+  days: [
+    {
+      name: "Day 1",
+      inputs: [
+        { exercise: "Push-ups", repetitions: 10 },
+        { exercise: "Squats", repetitions: 15 },
+      ],
+    },
+
+    {
+      name: "Day 2",
+      inputs: [
+        { exercise: "Push-ups", repetitions: 10 },
+        { exercise: "Squats", repetitions: 15 },
+      ],
+    },
+
+    {
+      name: "Day 3",
+      inputs: [
+        { exercise: "Push-ups", repetitions: 10 },
+        { exercise: "Squats", repetitions: 15 },
+      ],
+    },
+  ],
+};
 
 const Settings = () => {
+  const { t } = useTranslation();
+  const [logoPreview, setLogoPreview] = useState<Blob>();
+
+  const { data, isFetched } = useQuery({
+    queryKey: ["pdfEditorSettings"],
+    queryFn: async () => {
+      const settings = await LoadPDFEditorSettings();
+      const parsed: SettingsForm = JSON.parse(settings);
+
+      const logo = await getLogo();
+
+      return {
+        header: parsed.header,
+        table: parsed.table,
+        theme: parsed.theme,
+        compact: parsed.compact,
+        logo: logo,
+      };
+    },
+  });
+
+  const {
+    register,
+    reset,
+    watch,
+    setValue,
+    getValues,
+    formState: { isDirty },
+  } = useForm<SettingsForm>({
+    defaultValues: data,
+  });
+
+  const fileRef = useRef<HTMLInputElement>(null);
+  // this will reset the form with the laoded settings.
+  useEffect(() => {
+    reset(data);
+  }, [data, reset]);
+
+  if (!isFetched) {
+    return <div>Loading...</div>;
+  }
+
+  const isThereLogo =
+    (data && !!getValues("logo") && getValues("logo").length) || !!logoPreview;
+
   return (
-    <div className="bg-zinc-900 h-screen w-full p-8">
+    <form className="bg-zinc-900 h-max w-full p-8">
       <div className="flex flex-col gap-10">
+        <div className="flex flex-row justify-between rounded-lg">
+          <div className="flex flex-row gap-2">
+            <div className="flex flex-row gap-2">
+              <Button variant="default" onClick={() => navigate("/")}>
+                <div className="flex flex-row gap-2 items-center">
+                  <Icon name="chevron" className="-rotate-90" color="#FFFFFF" />
+                  <p>{t("editor.back")}</p>
+                </div>
+              </Button>
+            </div>
+          </div>
+        </div>
         <div className="flex flex-col gap-2">
-          <h1 className="text-2xl font-bold text-white">Interfaccia</h1>
+          <h1 className="text-2xl font-bold text-white">
+            {t("editor.settings")}
+          </h1>
           <div className="flex flex-col gap-6 bg-zinc-800 p-6 rounded-lg w-max">
             <SelectInput
-              disabled
-              label="Lingua"
-              placeholder="Choose your preference"
-              selectedItem={{ value: "it", label: "Italiano" }}
+              label={t("settings.interface.lang")}
+              placeholder={t("settings.interface.lang")}
+              selectedItem={
+                i18n.language === "it"
+                  ? { value: "it", label: "Italiano" }
+                  : { value: "en", label: "English" }
+              }
+              onValueChange={(value) => {
+                i18n.changeLanguage(value);
+              }}
               items={[
                 { value: "it", label: "Italiano" },
                 { value: "en", label: "English" },
@@ -20,8 +137,8 @@ const Settings = () => {
 
             <SelectInput
               disabled
-              label="Tema"
-              placeholder="Choose your preference"
+              label={t("settings.interface.theme")}
+              placeholder={t("settings.interface.theme")}
               selectedItem={{ value: "dark", label: "Dark" }}
               items={[
                 { value: "light", label: "Light" },
@@ -29,9 +146,215 @@ const Settings = () => {
               ]}
             />
           </div>
+
+          <h2 className="text-xl font-bold text-white mt-6">
+            {t("editor.exportPDF")}
+          </h2>
+          <div className="flex flex-row gap-6">
+            <div className="flex flex-col gap-4 bg-zinc-800 p-6 rounded-lg w-full max-w-xl">
+              <h3 className="text-lg font-semibold text-white mt-4">Layout</h3>
+
+              <div className="flex flex-row gap-2 items-center">
+                <Input
+                  className="hidden"
+                  ref={fileRef}
+                  type="file"
+                  accept="image/png"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setLogoPreview(file);
+
+                    const url = URL.createObjectURL(file);
+                    setValue("logo", url, { shouldDirty: true });
+                  }}
+                />
+                <Button
+                  variant="default"
+                  onClick={() => fileRef.current?.click()}
+                >
+                  {t("settings.pdfEditor.logo.upload")}
+                </Button>
+                {isThereLogo && (
+                  <Button
+                    variant="tertiary"
+                    onClick={() => {
+                      DeleteLogo();
+                      setLogoPreview(undefined);
+                      setValue("logo", "", { shouldDirty: true });
+                    }}
+                  >
+                    {t("settings.pdfEditor.logo.remove")}
+                  </Button>
+                )}
+              </div>
+
+              <div className="flex flex-row gap-2 items-center">
+                <Checkbox
+                  {...register("compact")}
+                  defaultValue={getValues("compact") as unknown as string}
+                  checked={getValues("compact")}
+                  onCheckedChange={(checked) =>
+                    setValue("compact", checked as boolean, {
+                      shouldDirty: true,
+                    })
+                  }
+                />
+                <p className="text-white">{t("settings.pdfEditor.compact")}</p>
+              </div>
+
+              <h3 className="text-lg font-semibold text-white mt-4">
+                {t("settings.pdfEditor.headerTitle")}
+              </h3>
+              <div className="flex flex-col text-white">
+                <p className="mb-1">
+                  {t("settings.pdfEditor.headerText.color")}
+                </p>
+                <input
+                  {...register("header.textColor")}
+                  type="color"
+                  className="w-16 h-8"
+                />
+              </div>
+              <div className="flex flex-col text-white">
+                <p className="mb-1">
+                  {t("settings.pdfEditor.tableHeader.backgroundColor")}
+                </p>
+                <input
+                  {...register("header.backgroundColor")}
+                  type="color"
+                  className="w-16 h-8"
+                />
+              </div>
+              <Slider
+                label={t("settings.pdfEditor.headerText.fontSize")}
+                currentValue={parseInt(watch("header.fontSize"))}
+                onChange={(value) =>
+                  setValue("header.fontSize", value.toString(), {
+                    shouldDirty: true,
+                  })
+                }
+                min={8}
+                max={24}
+              />
+
+              <div className="flex items-center text-white">
+                <input
+                  {...register("header.bold")}
+                  type="checkbox"
+                  className="mr-2"
+                />
+                {t("settings.pdfEditor.headerText.fontWeight")}
+              </div>
+
+              <h3 className="text-lg font-semibold text-white mt-4">
+                {t("settings.pdfEditor.cellTitle")}
+              </h3>
+
+              <div className="flex flex-col text-white">
+                <p className="mb-1">
+                  {t("settings.pdfEditor.table.borderColor")}
+                </p>
+                <input
+                  {...register("table.borderColor")}
+                  type="color"
+                  className="w-16 h-8"
+                />
+              </div>
+
+              <Slider
+                label={t("settings.pdfEditor.table.borderRadius")}
+                currentValue={parseInt(watch("table.borderRadius")) || 0}
+                onChange={(value) =>
+                  setValue("table.borderRadius", value.toString(), {
+                    shouldDirty: true,
+                  })
+                }
+                min={0}
+                max={24}
+              />
+
+              <div className="flex flex-col text-white">
+                <p className="mb-1">
+                  {t("settings.pdfEditor.tableRow.backgroundColor")}
+                </p>
+                <input
+                  {...register("table.exerciseBackgroundColor")}
+                  type="color"
+                  className="w-16 h-8"
+                />
+              </div>
+
+              <div className="flex flex-col text-white">
+                <p className="mb-1">
+                  {t("settings.pdfEditor.tableCell.color")}
+                </p>
+                <input
+                  {...register("table.cellColor")}
+                  type="color"
+                  className="w-16 h-8"
+                />
+              </div>
+
+              <Slider
+                label={t("settings.pdfEditor.tableCell.fontSize")}
+                currentValue={parseInt(watch("table.cellFontSize")) || 11}
+                onChange={(value) =>
+                  setValue("table.cellFontSize", value.toString(), {
+                    shouldDirty: true,
+                  })
+                }
+                min={8}
+                max={20}
+              />
+
+              <div className="flex items-center text-white">
+                <input
+                  {...register("table.exerciseBold")}
+                  type="checkbox"
+                  className="mr-2"
+                />
+                {t("settings.pdfEditor.exerciseText.fontWeight")}
+              </div>
+
+              <div className="flex flex-row gap-2 mt-2">
+                <Button
+                  disabled={!isDirty}
+                  variant="secondary"
+                  onClick={async () => {
+                    if (logoPreview) {
+                      const base64 = await blobToBase64(logoPreview);
+                      await SaveLogo(base64);
+                    }
+                    await SavePDFEditorSettings(JSON.stringify(watch()));
+
+                    toast.success(t("toasts.settingsSaved"));
+                  }}
+                >
+                  {t("generalInputs.confirm")}
+                </Button>
+                <Button
+                  variant="tertiary"
+                  onClick={() => {
+                    reset();
+                  }}
+                >
+                  Reset
+                </Button>
+              </div>
+            </div>
+
+            {isFetched && !!data && (
+              <PDFPreview
+                data={dummyData}
+                settings={{ ...watch(), logo: getValues("logo") }}
+                key={JSON.stringify(watch())}
+              />
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </form>
   );
 };
 

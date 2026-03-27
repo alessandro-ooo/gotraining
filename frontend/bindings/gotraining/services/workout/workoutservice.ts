@@ -9,6 +9,10 @@ import { Call as $Call, CancellablePromise as $CancellablePromise, Create as $Cr
 // @ts-ignore: Unused imports
 import * as $models from "./models.js";
 
+export function ExportFile(path: string, data: string): $CancellablePromise<void> {
+    return $Call.ByID(2785325084, path, data);
+}
+
 export function ListWorkouts(): $CancellablePromise<$models.JSONItem[]> {
     return $Call.ByID(538148056).then(($result: any) => {
         return $$createType1($result);

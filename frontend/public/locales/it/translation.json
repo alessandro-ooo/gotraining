@@ -18,12 +18,13 @@
     "exportPDF": "Esporta PDF",
     "saveWorkout": "Salva allenamento",
     "loadWorkout": "Carica allenamento",
-    "settings": "Impostazioni"
+    "settings": "Impostazioni",
+    "back": "Indietro"
   },
 
   "generalInputs": {
     "confirm": "Conferma",
-    "discard": "Scarta"
+    "discard": "Annulla"
   },
 
   "dialogs": {
@@ -44,9 +45,10 @@
         "fileName": "Nome",
         "lastModified": "Ultimo aggiornamento"
       },
+      "nodata": "Nessun file trovato.",
       "inputs": {
         "confirm": "Carica",
-        "discard": "Scarta"
+        "discard": "Annulla"
       }
     }
   },
@@ -55,6 +57,50 @@
     "interface": {
       "lang": "Lingua",
       "theme": "Tema"
+    },
+    "pdfEditor": {
+      "logo": {
+        "upload": "Carica logo",
+        "remove": "Rimuovi logo"
+      },
+      "compact": "Modalità compatta",
+      "headerTitle": "Intestazione",
+      "cellTitle": "Cella",
+      "table": {
+        "borderColor": "Colore del bordo",
+        "borderRadius": "Raggio del bordo"
+      },
+      "tableRow": {
+        "backgroundColor": "Colore di sfondo della cella",
+        "flexDirection": "Direzione del flesso",
+        "borderRadius": "Raggio del bordo della cella"
+      },
+      "tableHeader": {
+        "backgroundColor": "Colore di sfondo dell'intestazione"
+      },
+      "headerText": {
+        "color": "Colore del testo dell'intestazione",
+        "fontSize": "Dimensione del carattere dell'intestazione",
+        "fontWeight": "Grassetto dell'intestazione"
+      },
+      "tableCell": {
+        "padding": "Padding della cella",
+        "borderRightWidth": "Larghezza del bordo destro",
+        "borderRightColor": "Colore del bordo destro",
+        "color": "Colore del testo della cella",
+        "fontSize": "Dimensione del carattere della cella"
+      },
+      "exerciseText": {
+        "fontWeight": "Grassetto dell'esercizio"
+      }
     }
+  },
+
+  "toasts": {
+    "settingsSaved": "Le impostazioni sono state salvate con successo.",
+    "workoutSaved": "L'allenamento è stato salvato con successo.",
+    "workoutLoaded": "L'allenamento è stato caricato con successo.",
+    "workoutSaveError": "Si è verificato un errore durante il salvataggio dell'allenamento.",
+    "workoutLoadError": "Si è verificato un errore durante il caricamento dell'allenamento."
   }
 }

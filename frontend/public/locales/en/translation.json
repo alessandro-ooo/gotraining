@@ -18,7 +18,8 @@
     "exportPDF": "Export PDF",
     "saveWorkout": "Save workout",
     "loadWorkout": "Load workout",
-    "settings": "Settings"
+    "settings": "Settings",
+    "back": "Back"
   },
 
   "generalInputs": {
@@ -44,6 +45,7 @@
         "fileName": "Name",
         "lastModified": "Last modified"
       },
+      "nodata": "No data found.",
       "inputs": {
         "confirm": "Load",
         "discard": "Discard"
@@ -55,6 +57,50 @@
     "interface": {
       "lang": "Language",
       "theme": "Theme"
+    },
+    "pdfEditor": {
+      "logo": {
+        "upload": "Upload logo",
+        "remove": "Remove logo"
+      },
+      "compact": "Compact mode",
+      "headerTitle": "Header",
+      "cellTitle": "Cell",
+      "table": {
+        "borderColor": "Border color",
+        "borderRadius": "Border radius"
+      },
+      "tableRow": {
+        "backgroundColor": "Row background color",
+        "flexDirection": "Flex direction",
+        "borderRadius": "Row border radius"
+      },
+      "tableHeader": {
+        "backgroundColor": "Header background color"
+      },
+      "headerText": {
+        "color": "Header text color",
+        "fontSize": "Header font size",
+        "fontWeight": "Header font weight"
+      },
+      "tableCell": {
+        "padding": "Cell padding",
+        "borderRightWidth": "Right border width",
+        "borderRightColor": "Right border color",
+        "color": "Cell text color",
+        "fontSize": "Cell font size"
+      },
+      "exerciseText": {
+        "fontWeight": "Exercise font weight"
+      }
     }
+  },
+
+  "toasts": {
+    "settingsSaved": "Settings have been saved successfully.",
+    "workoutSaved": "Workout has been saved successfully.",
+    "workoutLoaded": "Workout has been loaded successfully.",
+    "workoutSaveError": "An error occurred while saving the workout.",
+    "workoutLoadError": "An error occurred while loading the workout."
   }
 }

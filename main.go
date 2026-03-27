@@ -4,10 +4,15 @@ import (
 	"embed"
 	_ "embed"
 	"log"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 
+	pdfeditor "gotraining/services/settings"
 	"gotraining/services/workout"
 )
 
@@ -38,17 +43,41 @@ func main() {
 	// 'Mac' options tailor the application when running an macOS.
 	app := application.New(application.Options{
 		Name:        "gotraining",
-		Description: "A demo of using raw HTML & CSS",
+		Description: "Build workout plans with just a few clicks!",
 		Services: []application.Service{
 			application.NewService(&workout.WorkoutService{}),
+			application.NewService(&pdfeditor.PDFEditorService{}),
 		},
+		
 		Assets: application.AssetOptions{
-			Handler: application.AssetFileServerFS(assets),
-		},
+    	Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+        if strings.HasPrefix(r.URL.Path, "/images/") {
+
+            homeDir, _ := os.UserHomeDir()
+            basePath := filepath.Join(homeDir, "Documents", "plans", "settings")
+
+            fileName := strings.TrimPrefix(r.URL.Path, "/images/")
+            fullPath := filepath.Join(basePath, fileName)
+
+            if !strings.HasPrefix(fullPath, basePath) {
+                http.Error(w, "Forbidden", http.StatusForbidden)
+                return
+            }
+
+            http.ServeFile(w, r, fullPath)
+            return
+        }
+
+        // fallback to embedded assets
+        application.AssetFileServerFS(assets).ServeHTTP(w, r)
+    }),
+},
 		Mac: application.MacOptions{
 			ApplicationShouldTerminateAfterLastWindowClosed: true,
 		},
 	})
+
 
 	// Create a new window with the necessary options.
 	// 'Title' is the title of the window.
@@ -56,7 +85,7 @@ func main() {
 	// 'BackgroundColour' is the background colour of the window.
 	// 'URL' is the URL that will be loaded into the webview.
 	app.Window.NewWithOptions(application.WebviewWindowOptions{
-		Title: "Window 1",
+		Title: "gotraining",
 		Mac: application.MacWindow{
 			InvisibleTitleBarHeight: 50,
 			Backdrop:                application.MacBackdropTranslucent,
@@ -64,8 +93,12 @@ func main() {
 		},
 		BackgroundColour: application.NewRGB(27, 38, 54),
 		URL:              "/",
+		Width: 1280, // gotta set it to something otherwise it spawns at 800x600 and resizes itself if u click the border
+		Height: 720, // gotta set it to something otherwise it spawns at 800x600 and resizes itself if u click the border
+		MinWidth: 1280,
+		MinHeight: 720,
 	})
-
+	
 	// Create a goroutine that emits an event containing the current time every second.
 	// The frontend can listen to this event and update the UI accordingly.
 	go func() {

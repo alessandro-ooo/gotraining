@@ -16,12 +16,12 @@ import {
   type ColumnDef,
   type SortingState,
 } from "@tanstack/react-table";
-import GTButton from "../../buttons/button";
+import Button from "../../buttons/button";
 import DialogManager from "../DialogManager";
 import Icon from "../../icon/icon";
 import { useTranslation } from "react-i18next";
 
-export type SavedItems = {
+type SavedItems = {
   name: string;
   lastModified: string;
 };
@@ -65,12 +65,12 @@ const DialogContentLoads = ({
       accessorKey: "name",
       header: ({ column }) => {
         return (
-          <GTButton
+          <Button
             variant="table"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             {t("dialogs.load.table.fileName")}
-          </GTButton>
+          </Button>
         );
       },
       cell: ({ row }) => (
@@ -83,12 +83,12 @@ const DialogContentLoads = ({
       accessorKey: "lastModified",
       header: ({ column }) => {
         return (
-          <GTButton
+          <Button
             variant="table"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             {t("dialogs.load.table.lastModified")}
-          </GTButton>
+          </Button>
         );
       },
       cell: ({ row }) => (
@@ -164,7 +164,7 @@ const DialogContentLoads = ({
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No Loads found.
+                    {t("dialogs.load.nodata")}
                   </TableCell>
                 </TableRow>
               )}
@@ -175,7 +175,7 @@ const DialogContentLoads = ({
       title={t("dialogs.load.title")}
       description={t("dialogs.load.description")}
       options={[
-        <GTButton
+        <Button
           variant="default"
           disabled={selectedItemIndex === undefined}
           onClick={() => onLoadClick()}
@@ -184,10 +184,10 @@ const DialogContentLoads = ({
             <p>{t("dialogs.load.inputs.confirm")}</p>
             <Icon name="load" color="#FFFFFF" />
           </div>
-        </GTButton>,
-        <GTButton variant="default" onClick={() => onCancelClick()}>
+        </Button>,
+        <Button variant="default" onClick={() => onCancelClick()}>
           {t("dialogs.load.inputs.discard")}
-        </GTButton>,
+        </Button>,
       ]}
     />
   );

@@ -8,11 +8,13 @@ import (
 )
 
 type WorkoutService struct {}
-
 type JSONItem struct {
     Filename string `json:"filename"`
+    LastModified string `json:"lastModified"`
     Content  string `json:"content"`
 }
+
+func (j *WorkoutService) ExportFile(path string, data []byte) (error) { return os.WriteFile(path + ".pdf", data, 0644) }
 
 func (j *WorkoutService) SaveWorkout(data string, name string) (string, error) {
     homeDir, err := os.UserHomeDir()
@@ -38,6 +40,7 @@ func (j *WorkoutService) ListWorkouts() ([]JSONItem, error) {
     if err != nil {
         return nil, err
     }
+
     dir := filepath.Join(homeDir, "Documents", "plans")
 
     entries, err := os.ReadDir(dir)
@@ -55,14 +58,26 @@ func (j *WorkoutService) ListWorkouts() ([]JSONItem, error) {
 
     var jsons []JSONItem
     for _, filename := range filenames {
-        filepath := filepath.Join(dir, filename)
-        data, err := os.ReadFile(filepath)
+        filePath := filepath.Join(dir, filename)
+
+        info, err := os.Stat(filePath)
         if err != nil {
             return nil, err
         }
+
+        data, err := os.ReadFile(filePath)
+        if err != nil {
+            return nil, err
+        }
+
         name := strings.TrimSuffix(filename, ".json")
-        jsons = append(jsons, JSONItem{Filename: name, Content: string(data)})
+        jsons = append(jsons, JSONItem{
+            Filename:     name,
+            Content:      string(data),
+            LastModified: info.ModTime().Format("2006-01-02 15:04:05"),
+        })
     }
+
     return jsons, nil
 }
 
@@ -75,8 +90,6 @@ func (j *WorkoutService) LoadWorkout(name string) (string, error) {
 
     filename := filepath.Join(dir, name+".json")
     data, err := os.ReadFile(filename)
-    if err != nil {
-        return "", err
-    }
+
     return string(data), nil
 }
